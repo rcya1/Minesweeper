@@ -9,7 +9,7 @@ import java.awt.event.MouseEvent;
 
 public class PlayState extends State
 {
-	MineField mineField;
+	private MineField mineField;
 
 	public PlayState(StateManager stateManager)
 	{

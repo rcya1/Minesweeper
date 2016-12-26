@@ -2,8 +2,10 @@ package main;
 
 import javax.swing.*;
 
-public class Game
+class Game
 {
+	//Sprites ripped by Black Squirrel
+
 	public static void main(String[] args)
 	{
 		JFrame frame = new JFrame("Minesweeper");
