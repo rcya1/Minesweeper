@@ -1,11 +1,13 @@
 package components;
 
 import main.GamePanel;
+import utility.Images;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 
 public class MineField
 {
@@ -109,56 +111,60 @@ public class MineField
 		{
 			for(int row = 0; row < rows; row++)
 			{
+				BufferedImage drawImage = null;
+
 				switch(board[column][row])
 				{
 				case 0:
-					g2d.setColor(Color.GRAY);
-					g2d.fillRect(column * tileWidth, row * tileHeight, tileWidth, tileHeight);
+					drawImage = Images.Tiles.EMPTY;
 					break;
 				case 1:
 					switch(locations[column][row])
 					{
 					case 0:
-						g2d.setColor(Color.DARK_GRAY);
+						drawImage = Images.Tiles.PRESSED;
 						break;
 					case -1:
-						g2d.setColor(Color.ORANGE);
+						drawImage = Images.Tiles.MINE_TRIGGERED;
 						break;
 					case 1:
-						g2d.setColor(Color.BLUE);
+						drawImage = Images.Tiles.Numbers.ONE;
 						break;
 					case 2:
-						g2d.setColor(Color.GREEN);
+						drawImage = Images.Tiles.Numbers.TWO;
 						break;
 					case 3:
-						g2d.setColor(Color.CYAN);
+						drawImage = Images.Tiles.Numbers.THREE;
 						break;
 					case 4:
-						g2d.setColor(Color.WHITE);
+						drawImage = Images.Tiles.Numbers.FOUR;
 						break;
 					case 5:
+						drawImage = Images.Tiles.Numbers.FIVE;
 						break;
 					case 6:
+						drawImage = Images.Tiles.Numbers.SIX;
 						break;
 					case 7:
+						drawImage = Images.Tiles.Numbers.SEVEN;
 						break;
 					case 8:
+						drawImage = Images.Tiles.Numbers.EIGHT;
 						break;
 					}
-
-					g2d.fillRect(column * tileWidth, row * tileHeight, tileWidth, tileHeight);
 					break;
 				case 2:
-					g2d.setColor(Color.RED);
-					g2d.fillRect(column * tileWidth, row * tileHeight, tileWidth, tileHeight);
+					drawImage = Images.Tiles.FLAG;
 					break;
 				case 3:
+					drawImage = Images.Tiles.QUESTION;
 					break;
 				case 4:
-					g2d.setColor(Color.BLACK);
-					g2d.fillRect(column * tileWidth, row * tileHeight, tileWidth, tileHeight);
+					drawImage = Images.Tiles.PRESSED;
 					break;
 				}
+
+				g2d.drawImage(drawImage, column * tileWidth, row * tileHeight, tileWidth, tileHeight, null);
 			}
 		}
 	}
