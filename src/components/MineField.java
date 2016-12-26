@@ -45,15 +45,67 @@ public class MineField
 
 	private void init()
 	{
-		//Set up all of the mines, and get the numbers
-		//TEMP
+		for(int i = 0; i < numOfMines; i++) addRandomMine();
+
 		for(int i = 0; i < columns; i++)
 		{
 			for(int j = 0; j < rows; j++)
 			{
-				locations[i][j] = 0;
+				System.out.print(locations[i][j] + " ");
+			}
+			System.out.print("\n");
+		}
+	}
+
+	private void addRandomMine()
+	{
+		//Normally, we add one to the column and row, but because they are indices, we don't
+		int column = (int) (Math.random() * columns);
+		int row = (int) (Math.random() * rows);
+
+		if(locations[column][row] != -1)
+		{
+			locations[column][row] = -1;
+
+			boolean leftAvailable = column - 1 >= 0;
+			boolean rightAvailable = column + 1 < columns;
+			boolean topAvailable = row - 1 >= 0;
+			boolean bottomAvailable = row + 1 < rows;
+
+			if(leftAvailable)
+			{
+				if(locations[column - 1][row] != -1) locations[column - 1][row]++;
+				if(topAvailable)
+				{
+					if(locations[column - 1][row - 1] != -1) locations[column - 1][row - 1]++;
+				}
+				if(bottomAvailable)
+				{
+					if(locations[column - 1][row + 1] != -1) locations[column - 1][row + 1]++;
+				}
+			}
+			if(rightAvailable)
+			{
+				if(locations[column + 1][row] != -1) locations[column + 1][row]++;
+				if(topAvailable)
+				{
+					if(locations[column + 1][row - 1] != -1) locations[column + 1][row - 1]++;
+				}
+				if(bottomAvailable)
+				{
+					if(locations[column + 1][row + 1] != -1) locations[column + 1][row + 1]++;
+				}
+			}
+			if(topAvailable)
+			{
+				if(locations[column][row - 1] != -1) locations[column][row - 1]++;
+			}
+			if(bottomAvailable)
+			{
+				if(locations[column][row + 1] != -1) locations[column][row + 1]++;
 			}
 		}
+		else addRandomMine();
 	}
 
 	public void update()
@@ -78,8 +130,36 @@ public class MineField
 					g2d.fillRect(column * tileWidth, row * tileHeight, tileWidth, tileHeight);
 					break;
 				case 1:
-					//SWITCH BASED ON LOCATIONS
-					g2d.setColor(Color.DARK_GRAY);
+					switch(locations[column][row])
+					{
+					case 0:
+						g2d.setColor(Color.DARK_GRAY);
+						break;
+					case -1:
+						g2d.setColor(Color.ORANGE);
+						break;
+					case 1:
+						g2d.setColor(Color.BLUE);
+						break;
+					case 2:
+						g2d.setColor(Color.GREEN);
+						break;
+					case 3:
+						g2d.setColor(Color.CYAN);
+						break;
+					case 4:
+						g2d.setColor(Color.WHITE);
+						break;
+					case 5:
+						break;
+					case 6:
+						break;
+					case 7:
+						break;
+					case 8:
+						break;
+					}
+
 					g2d.fillRect(column * tileWidth, row * tileHeight, tileWidth, tileHeight);
 					break;
 				case 2:
