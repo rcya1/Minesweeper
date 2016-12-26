@@ -40,21 +40,7 @@ public class MineField
 
 		this.numOfMines = numOfMines;
 
-		init();
-	}
-
-	private void init()
-	{
 		for(int i = 0; i < numOfMines; i++) addRandomMine();
-
-		for(int i = 0; i < columns; i++)
-		{
-			for(int j = 0; j < rows; j++)
-			{
-				System.out.print(locations[i][j] + " ");
-			}
-			System.out.print("\n");
-		}
 	}
 
 	private void addRandomMine()
@@ -179,7 +165,10 @@ public class MineField
 
 	public void keyPressed(int e)
 	{
-
+		if(e == KeyEvent.VK_R)
+		{
+			createNewBoard(9, 9, 10);
+		}
 	}
 
 	public void keyReleased(int e)
@@ -218,8 +207,34 @@ public class MineField
 			{
 				if(board[column][row] == 4 && SwingUtilities.isLeftMouseButton(e))
 				{
-					board[column][row] = 1;
+					click(column, row);
 				}
+			}
+		}
+	}
+
+	private void click(int column, int row)
+	{
+		if(board[column][row] != 1)
+		{
+			board[column][row] = 1;
+
+			if(locations[column][row] == 0)
+			{
+				if(column - 1 >= 0)
+				{
+					click(column - 1, row);
+					if(row - 1 >= 0) click(column - 1, row - 1);
+					if(row + 1 < rows) click(column - 1, row + 1);
+				}
+				if(column + 1 < columns)
+				{
+					click(column + 1, row);
+					if(row - 1 >= 0) click(column + 1, row - 1);
+					if(row + 1 < rows) click(column + 1, row + 1);
+				}
+				if(row - 1 >= 0) click(column, row - 1);
+				if(row + 1 < rows) click(column, row + 1);
 			}
 		}
 	}
