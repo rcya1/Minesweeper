@@ -118,11 +118,12 @@ public class MineField //TODO Force first pick to be a blank space
 		//Set to false when the win conditions are not met
 		boolean winFlag = true;
 
-		//Check if win
+		//Iterate through all tiles
 		for(int column = 0; column < columns; column++)
 		{
 			for(int row = 0; row < rows; row++)
 			{
+				//Check if win
 				//Check if the tile is open
 				if(board[column][row] != 1)
 				{
@@ -136,7 +137,6 @@ public class MineField //TODO Force first pick to be a blank space
 		if(winFlag)
 		{
 			gameStatus = 2;
-			//WIN CODE
 		}
 	}
 
@@ -259,6 +259,7 @@ public class MineField //TODO Force first pick to be a blank space
 					else if(SwingUtilities.isRightMouseButton(e))
 					{
 						board[column][row] = 2;
+						numOfMines--;
 					}
 					break;
 				//If the tile is flagged
@@ -267,6 +268,7 @@ public class MineField //TODO Force first pick to be a blank space
 					if(SwingUtilities.isRightMouseButton(e))
 					{
 						board[column][row] = 0;
+						numOfMines++;
 					}
 					break;
 				}
@@ -428,8 +430,6 @@ public class MineField //TODO Force first pick to be a blank space
 						}
 					}
 				}
-
-				//LOST CODE
 			}
 		}
 	}
@@ -464,5 +464,9 @@ public class MineField //TODO Force first pick to be a blank space
 	int getGameStatus()
 	{
 		return gameStatus;
+	}
+	int getNumOfMines()
+	{
+		return numOfMines;
 	}
 }

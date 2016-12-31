@@ -52,11 +52,17 @@ public class TopBar
 		}
 		g2d.drawImage(faceImage, GamePanel.WIDTH / 2 - Images.TopBar.Faces.faceWidth / 2, 0, null);
 
-		BufferedImage[] clockImages = getClockImages(timerInSeconds);
+		BufferedImage[] clockImages = getNumberImages(timerInSeconds);
 		for(int i = 0; i < clockImages.length; i++)
 		{
 			g2d.drawImage(clockImages[i], GamePanel.WIDTH - Images.TopBar.Numbers.numberWidth * 3 - 1 +
 					i * Images.TopBar.Numbers.numberWidth, 2, null);
+		}
+		//TODO Add handling for negative numbers
+		BufferedImage[] numOfMinesImages = getNumberImages(mineField.getNumOfMines());
+		for(int i = 0; i < numOfMinesImages.length; i++)
+		{
+			g2d.drawImage(numOfMinesImages[i], 1 + i * Images.TopBar.Numbers.numberWidth, 2, null);
 		}
 	}
 
@@ -97,14 +103,14 @@ public class TopBar
 		}
 	}
 
-	private BufferedImage[] getClockImages(int input)
+	private BufferedImage[] getNumberImages(int input)
 	{
-		int time = input;
+		int numberInput = input;
 		Stack<Integer> numbers = new Stack<>();
 		for(int i = 0; i < 3; i++)
 		{
-			numbers.push(time % 10);
-			time /= 10;
+			numbers.push(numberInput % 10);
+			numberInput /= 10;
 		}
 
 		BufferedImage[] images = new BufferedImage[3];
