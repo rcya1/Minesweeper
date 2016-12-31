@@ -24,7 +24,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 	private StateManager stateManager;
 
-	private final int FPS = 60;
+	public static final int FPS = 60;
 
 	GamePanel()
 	{

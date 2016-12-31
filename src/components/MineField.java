@@ -5,12 +5,11 @@ import utility.Images;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
-public class MineField
+public class MineField //TODO Force first pick to be a blank space
 {
 	private int x;
 	private int y;
@@ -26,7 +25,7 @@ public class MineField
 	private int[][] locations; //Locations of all mines (0-CLEAR, -1-MINE_TRIGGERED, -2-MINE_UNTRIGGERED, NUMBERS-NUMBERS)
 	private int[][] board; //All pieces that have been selected (0-NOT, 1-SELECTED, 2-FLAG, 3-?, 4-HELD, 5-FALSE)
 
-	private int faceExpression; //0-Neutral, 1-:O, 2-WIN, 3-LOSS
+	private int gameStatus; //-1-Has not clicked a square, 0-Neutral, 1-:O, 2-WIN, 3-LOSS
 
 	private boolean multiClickFlag; //Activated when right+left is used
 	private int[] multiClickCoordinates; //Row and Column of tile that is multiclicked
@@ -42,7 +41,7 @@ public class MineField
 		y = 0;
 	}
 
-	public void createNewBoard(int columns, int rows, int numOfMines)
+	void createNewBoard(int columns, int rows, int numOfMines)
 	{
 		this.columns = columns;
 		this.rows = rows;
@@ -52,7 +51,7 @@ public class MineField
 
 		this.numOfMines = numOfMines;
 
-		faceExpression = 0;
+		gameStatus = -1;
 
 		for(int i = 0; i < numOfMines; i++) addRandomMine();
 	}
@@ -136,7 +135,7 @@ public class MineField
 		//If the game has been won
 		if(winFlag)
 		{
-			faceExpression = 2;
+			gameStatus = 2;
 			//WIN CODE
 		}
 	}
@@ -219,115 +218,111 @@ public class MineField
 			}
 		}
 
-		//Reset the offset
+		//Reset the translation
 		g2d.setTransform(transform);
-	}
-
-	public void keyPressed(int e)
-	{
-		//Restart
-		if(e == KeyEvent.VK_R)
-		{
-			createNewBoard(9, 9, 10);
-		}
-	}
-
-	public void keyReleased(int e)
-	{
-
 	}
 
 	public void mousePressed(MouseEvent e)
 	{
 		//If the game has not been won or lost yet
-		if(faceExpression != 2 && faceExpression != 3)
+		if(gameStatus != 2 && gameStatus != 3)
 		{
-			//Get the mouseX, subtract the offset, and divide by the tile dimensions to get
-			//the row/column of where an object is
-			//tileWidth is multiplied by scale, since getX is in unscaled pixels, while the entire thing is
-			//scaled up
-			int column = (e.getX() - (x * GamePanel.SCALE)) / (tileWidth * GamePanel.SCALE);
-			int row = (e.getY() - (y * GamePanel.SCALE)) / (tileHeight * GamePanel.SCALE);
-
-			//Action depends on what type of tile the user clicks on
-			switch(board[column][row])
+			//Ensure the mouse coordinates are within the bounds of the game
+			if(e.getX() >= this.x * GamePanel.SCALE &&
+					e.getX() <= (this.x + this.tileWidth * columns) * GamePanel.SCALE &&
+					e.getY() >= this.y * GamePanel.SCALE &&
+					e.getY() <= (this.y + this.tileHeight * rows) * GamePanel.SCALE)
 			{
-			//If the tile has not been pressed
-			case 0:
-				//If left clicked, set the tile to be pressed
-				if(SwingUtilities.isLeftMouseButton(e))
-				{
-					//Set the faceExpression to the :O
-					faceExpression = 1;
-					board[column][row] = 4;
-				}
-				//If right clicked, set the tile to be flagged
-				else if(SwingUtilities.isRightMouseButton(e))
-				{
-					board[column][row] = 2;
-				}
-				break;
-			//If the tile is flagged
-			case 2:
-				//If right clicked, remove the flag
-				if(SwingUtilities.isRightMouseButton(e))
-				{
-					board[column][row] = 0;
-				}
-				break;
-			}
+				//Get the mouseX, subtract the offset, and divide by the tile dimensions to get
+				//the row/column of where an object is
+				//tileWidth is multiplied by scale, since getX is in unscaled pixels, while the entire thing is
+				//scaled up
 
-			//When a number tile has all mines around it marked, left+right clicking clears all tiles around it
-			//If the tile is a number tile
-			if(locations[column][row] >= 1)
-			{
-				//If both the left and right mouse button are clicked
-				if(SwingUtilities.isLeftMouseButton(e) && SwingUtilities.isRightMouseButton(e))
-				{
-					//Check all of the surrounding tiles to the tile being pressed
-					//Set the tiles to being pressed
-					boolean leftAvailable = column - 1 >= 0;
-					boolean rightAvailable = column + 1 < columns;
-					boolean topAvailable = row - 1 >= 0;
-					boolean bottomAvailable = row + 1 < rows;
+				if(gameStatus == -1) gameStatus = 0;
 
-					if(leftAvailable)
+				int column = (e.getX() - (x * GamePanel.SCALE)) / (tileWidth * GamePanel.SCALE);
+				int row = (e.getY() - (y * GamePanel.SCALE)) / (tileHeight * GamePanel.SCALE);
+
+				//Action depends on what type of tile the user clicks on
+				switch(board[column][row])
+				{
+				//If the tile has not been pressed
+				case 0:
+					//If left clicked, set the tile to be pressed
+					if(SwingUtilities.isLeftMouseButton(e))
 					{
-						if(board[column - 1][row]== 0) board[column - 1][row] = 4;
+						//Set the gameStatus to the :O
+						gameStatus = 1;
+						board[column][row] = 4;
+					}
+					//If right clicked, set the tile to be flagged
+					else if(SwingUtilities.isRightMouseButton(e))
+					{
+						board[column][row] = 2;
+					}
+					break;
+				//If the tile is flagged
+				case 2:
+					//If right clicked, remove the flag
+					if(SwingUtilities.isRightMouseButton(e))
+					{
+						board[column][row] = 0;
+					}
+					break;
+				}
+
+				//When a number tile has all mines around it marked, left+right clicking clears all tiles around it
+				//If the tile is a number tile
+				if(locations[column][row] >= 1)
+				{
+					//If both the left and right mouse button are clicked
+					if(SwingUtilities.isLeftMouseButton(e) && SwingUtilities.isRightMouseButton(e))
+					{
+						//Check all of the surrounding tiles to the tile being pressed
+						//Set the tiles to being pressed
+						boolean leftAvailable = column - 1 >= 0;
+						boolean rightAvailable = column + 1 < columns;
+						boolean topAvailable = row - 1 >= 0;
+						boolean bottomAvailable = row + 1 < rows;
+
+						if(leftAvailable)
+						{
+							if(board[column - 1][row] == 0) board[column - 1][row] = 4;
+							if(topAvailable)
+							{
+								if(board[column - 1][row - 1] == 0) board[column - 1][row - 1] = 4;
+							}
+							if(bottomAvailable)
+							{
+								if(board[column - 1][row + 1] == 0) board[column - 1][row + 1] = 4;
+							}
+						}
+						if(rightAvailable)
+						{
+							if(board[column + 1][row] == 0) board[column + 1][row] = 4;
+							if(topAvailable)
+							{
+								if(board[column + 1][row - 1] == 0) board[column + 1][row - 1] = 4;
+							}
+							if(bottomAvailable)
+							{
+								if(board[column + 1][row + 1] == 0) board[column + 1][row + 1] = 4;
+							}
+						}
 						if(topAvailable)
 						{
-							if(board[column - 1][row - 1]== 0) board[column - 1][row - 1] = 4;
+							if(board[column][row - 1] == 0) board[column][row - 1] = 4;
 						}
 						if(bottomAvailable)
 						{
-							if(board[column - 1][row + 1]== 0) board[column - 1][row + 1] = 4;
+							if(board[column][row + 1] == 0) board[column][row + 1] = 4;
 						}
-					}
-					if(rightAvailable)
-					{
-						if(board[column + 1][row]== 0) board[column + 1][row] = 4;
-						if(topAvailable)
-						{
-							if(board[column + 1][row - 1]== 0) board[column + 1][row - 1] = 4;
-						}
-						if(bottomAvailable)
-						{
-							if(board[column + 1][row + 1]== 0) board[column + 1][row + 1] = 4;
-						}
-					}
-					if(topAvailable)
-					{
-						if(board[column][row - 1]== 0) board[column][row - 1] = 4;
-					}
-					if(bottomAvailable)
-					{
-						if(board[column][row + 1]== 0) board[column][row + 1] = 4;
-					}
 
-					//Set the flag so that the click is handled properly
-					multiClickFlag = true;
-					//Set the multiClick coordinates to the tile pushed
-					multiClickCoordinates = new int[] {column, row};
+						//Set the flag so that the click is handled properly
+						multiClickFlag = true;
+						//Set the multiClick coordinates to the tile pushed
+						multiClickCoordinates = new int[] {column, row};
+					}
 				}
 			}
 		}
@@ -348,8 +343,8 @@ public class MineField
 				{
 					if(board[column][row] == 4 && SwingUtilities.isLeftMouseButton(e))
 					{
-						//Set the faceExpression back to normal and click the tile
-						if(faceExpression == 1) faceExpression = 0;
+						//Set the gameStatus back to normal and click the tile
+						if(gameStatus == 1) gameStatus = 0;
 						click(column, row);
 					}
 				}
@@ -401,8 +396,8 @@ public class MineField
 			//If mine is clicked
 			else if(locations[column][row] == -1)
 			{
-				//Set faceExpression to lost state
-				faceExpression = 3;
+				//Set gameStatus to lost state
+				gameStatus = 3;
 
 				//Loop through all tiles, find mines, and activate them, not click them
 				for(int columnI = 0; columnI < columns; columnI++)
@@ -466,8 +461,8 @@ public class MineField
 		this.y = y;
 	}
 
-	public int getGameStatus()
+	int getGameStatus()
 	{
-		return faceExpression;
+		return gameStatus;
 	}
 }
