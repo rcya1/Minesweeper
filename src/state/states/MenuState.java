@@ -1,6 +1,5 @@
 package state.states;
 
-import main.Game;
 import main.GamePanel;
 import state.State;
 import state.StateManager;
