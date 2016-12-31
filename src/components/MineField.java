@@ -137,12 +137,24 @@ public class MineField //TODO Force first pick to be a blank space
 		if(winFlag)
 		{
 			gameStatus = 2;
+
+			//Loop through all tiles, if a tile is amine and not flagged, set it to a flag
+			for(int columnI = 0; columnI < columns; columnI++)
+			{
+				for(int rowI = 0; rowI < rows; rowI++)
+				{
+					if(locations[columnI][rowI] == -1 && board[columnI][rowI] != 2)
+					{
+						board[columnI][rowI] = 2;
+					}
+				}
+			}
 		}
 	}
 
 	public void draw(Graphics2D g2d)
 	{
-		g2d.setColor(Color.WHITE);
+		g2d.setColor(Color.LIGHT_GRAY);
 		g2d.fillRect(0, 0, GamePanel.WIDTH, GamePanel.HEIGHT);
 
 		//Offset the drawing by a certain amount
@@ -385,7 +397,7 @@ public class MineField //TODO Force first pick to be a blank space
 	private void click(int column, int row)
 	{
 		//If the tile is not already pressed and it is not flagged
-		if(board[column][row] != 1 && board[column][row] != 2)
+		if(!(board[column][row] == 1 || board[column][row] == 2 || board[column][row] == 5))
 		{
 			//Set the tile to pressed
 			board[column][row] = 1;
@@ -395,11 +407,24 @@ public class MineField //TODO Force first pick to be a blank space
 			{
 				clickAround(column, row);
 			}
-			//If mine is clicked
+
+			//If a mine is clicked
 			else if(locations[column][row] == -1)
 			{
 				//Set gameStatus to lost state
 				gameStatus = 3;
+
+				//Loop through all tiles, if a tile is flagged and not a mine, set it to a false flag
+				for(int columnI = 0; columnI < columns; columnI++)
+				{
+					for(int rowI = 0; rowI < rows; rowI++)
+					{
+						if(board[columnI][rowI] == 2 && locations[columnI][rowI] != -1)
+						{
+							board[columnI][rowI] = 5;
+						}
+					}
+				}
 
 				//Loop through all tiles, find mines, and activate them, not click them
 				for(int columnI = 0; columnI < columns; columnI++)
@@ -415,18 +440,6 @@ public class MineField //TODO Force first pick to be a blank space
 							//clicked mine that remains -1 will be highlighted red
 							locations[columnI][rowI] = -2;
 							board[columnI][rowI] = 1;
-						}
-					}
-				}
-
-				//Loop through all tiles, if a tile is flagged and not a mine, set it to a false flag
-				for(int columnI = 0; columnI < columns; columnI++)
-				{
-					for(int rowI = 0; rowI < rows; rowI++)
-					{
-						if(board[columnI][rowI] == 2 && locations[columnI][rowI] != -1)
-						{
-							board[columnI][rowI] = 5;
 						}
 					}
 				}

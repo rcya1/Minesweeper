@@ -12,8 +12,8 @@ import java.awt.image.BufferedImage;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener, MouseListener
 {
-	public static final int WIDTH = 144;
-	public static final int HEIGHT = 170;
+	public static int WIDTH;
+	public static int HEIGHT;
 	public static final int SCALE = 2;
 
 	private Thread updateThread;
@@ -26,9 +26,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 	public static final int FPS = 60;
 
-	GamePanel()
+	GamePanel(int width, int height)
 	{
 		super();
+
+		WIDTH = width;
+		HEIGHT = height;
+
 		this.setFocusable(true);
 		this.requestFocus();
 		this.setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));

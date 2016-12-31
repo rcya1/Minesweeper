@@ -10,8 +10,8 @@ public class StateManager
 {
 	private static final int NUMBER_OF_STATES = 3;
 
-	private static final int MENU_STATE = 0;
-	private static final int PLAY_STATE = 1;
+	public static final int MENU_STATE = 0;
+	public static final int PLAY_STATE = 1;
 
 	private State[] states;
 	private int currentState;
@@ -19,7 +19,7 @@ public class StateManager
 	public StateManager()
 	{
 		states = new State[NUMBER_OF_STATES];
-		currentState = PLAY_STATE;
+		currentState = MENU_STATE;
 		loadState(currentState);
 	}
 
