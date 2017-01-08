@@ -1,5 +1,6 @@
 package state.states;
 
+import main.Game;
 import main.GamePanel;
 import state.State;
 import state.StateManager;
@@ -10,8 +11,10 @@ import java.awt.event.MouseEvent;
 
 public class MenuState extends State
 {
+	//Idea - Have an icon on the side that slides when changing the options
+
 	private String[] options;
-	private int selected;
+	private int selection;
 
 	public MenuState(StateManager stateManager)
 	{
@@ -22,7 +25,7 @@ public class MenuState extends State
 	public void init()
 	{
 		options = new String[] {"Play", "Setup Game", "Tutorial", "Exit"};
-		selected = 0;
+		selection = 0;
 	}
 
 	public void update()
@@ -38,7 +41,7 @@ public class MenuState extends State
 		for(int i = 0; i < options.length; i++)
 		{
 			g2d.setColor(Color.WHITE);
-			if(i == selected) g2d.setColor(Color.RED);
+			if(i == selection) g2d.setColor(Color.RED);
 			g2d.drawString(options[i], 8, 15 + 13 * i);
 		}
 	}
@@ -48,19 +51,20 @@ public class MenuState extends State
 		switch(key)
 		{
 		case KeyEvent.VK_UP:
-			if(selected > 0) selected--;
+			if(selection > 0) selection--;
 			break;
 		case KeyEvent.VK_DOWN:
-			if(selected < options.length - 1) selected++;
+			if(selection < options.length - 1) selection++;
 			break;
 		case KeyEvent.VK_ENTER:
-			switch(selected)
+			switch(selection)
 			{
 			case 0: //Play
 				stateManager.setState(StateManager.PLAY_STATE);
+				//Check if the values are changed, and if they are, create a new window.
 				break;
 			case 1: //Options
-				//Game.createNewWindow(300, 300);
+				stateManager.setState(StateManager.OPTION_STATE);
 				break;
 			case 2: //Help
 				break;

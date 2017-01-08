@@ -1,6 +1,7 @@
 package state;
 
 import state.states.MenuState;
+import state.states.OptionState;
 import state.states.PlayState;
 
 import java.awt.*;
@@ -12,14 +13,15 @@ public class StateManager
 
 	public static final int MENU_STATE = 0;
 	public static final int PLAY_STATE = 1;
+	public static final int OPTION_STATE = 2;
 
 	private State[] states;
-	private int currentState;
+	private static int currentState; //Default initializes to 0.
+	// Static so that when the new window is created, the currentState does not change
 
 	public StateManager()
 	{
 		states = new State[NUMBER_OF_STATES];
-		currentState = MENU_STATE;
 		loadState(currentState);
 	}
 
@@ -36,7 +38,8 @@ public class StateManager
 	private void loadState(int state)
 	{
 		if(state == MENU_STATE) states[state] = new MenuState(this);
-		if(state == PLAY_STATE) states[state] = new PlayState(this);
+		else if(state == PLAY_STATE) states[state] = new PlayState(this);
+		else if(state == OPTION_STATE) states[state] = new OptionState(this);
 	}
 
 	public void setState(int state)

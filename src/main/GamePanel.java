@@ -1,6 +1,7 @@
 package main;
 
 import state.StateManager;
+import utility.Settings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -69,6 +70,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		g2d = (Graphics2D) image.getGraphics();
 		running = true;
 		stateManager = new StateManager();
+
+		Settings.init();
 	}
 
 	private void update()

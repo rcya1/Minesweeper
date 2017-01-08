@@ -4,6 +4,7 @@ import components.MineField;
 import components.TopBar;
 import state.State;
 import state.StateManager;
+import utility.Settings;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -21,7 +22,7 @@ public class PlayState extends State
 
 	public void init()
 	{
-		mineField = new MineField(9, 9, 10);
+		mineField = new MineField(Settings.COLUMNS, Settings.ROWS, Settings.NUMBER_OF_MINES);
 		mineField.setCoordinates(0, 26);
 
 		topBar = new TopBar(mineField);

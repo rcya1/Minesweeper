@@ -2,6 +2,7 @@ package components;
 
 import main.GamePanel;
 import utility.Images;
+import utility.Settings;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -88,7 +89,7 @@ public class TopBar
 			if(faceExpression == 4)
 			{
 				faceExpression = 0;
-				mineField.createNewBoard(9, 9, 10);
+				mineField.createNewBoard(Settings.COLUMNS, Settings.ROWS, Settings.NUMBER_OF_MINES);
 				resetTimer();
 			}
 		}
@@ -98,7 +99,7 @@ public class TopBar
 	{
 		if(e == KeyEvent.VK_R)
 		{
-			mineField.createNewBoard(9, 9, 10);
+			mineField.createNewBoard(Settings.COLUMNS, Settings.ROWS, Settings.NUMBER_OF_MINES);
 			resetTimer();
 		}
 	}
