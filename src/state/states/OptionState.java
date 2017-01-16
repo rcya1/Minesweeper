@@ -116,7 +116,21 @@ public class OptionState extends State
 				Settings.COLUMNS = values[0];
 				Settings.ROWS = values[1];
 				Settings.NUMBER_OF_MINES = values[2];
-				Game.createNewWindow(values[0] * 16, values[1]* 16 + 26);
+
+				int gameWidth;
+				int gameHeight;
+
+				if(values[0] * 16 <= Settings.WIDTH_OF_SCREEN / GamePanel.SCALE)
+					gameWidth = values[0] * 16;
+				else
+					gameWidth = Math.round(Settings.WIDTH_OF_SCREEN / GamePanel.SCALE);
+
+				if(values[1] * 16 + 26 <= Settings.HEIGHT_OF_SCREEN / GamePanel.SCALE)
+					gameHeight = values[1] * 16 + 26;
+				else
+					gameHeight = Math.round(Settings.HEIGHT_OF_SCREEN / GamePanel.SCALE);
+
+				Game.createNewWindow(gameWidth, gameHeight);
 			}
 		}
 	}
@@ -132,6 +146,10 @@ public class OptionState extends State
 	}
 
 	public void mouseReleased(MouseEvent e)
+	{
+
+	}
+	public void mouseDragged(MouseEvent e)
 	{
 
 	}

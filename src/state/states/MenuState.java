@@ -1,6 +1,5 @@
 package state.states;
 
-import main.Game;
 import main.GamePanel;
 import state.State;
 import state.StateManager;
@@ -87,6 +86,10 @@ public class MenuState extends State
 	}
 
 	public void mouseReleased(MouseEvent e)
+	{
+
+	}
+	public void mouseDragged(MouseEvent e)
 	{
 
 	}

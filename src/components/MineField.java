@@ -2,6 +2,7 @@ package components;
 
 import main.GamePanel;
 import utility.Images;
+import utility.Settings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,6 +31,17 @@ public class MineField //TODO Force first pick to be a blank space
 	private boolean multiClickFlag; //Activated when right+left is used
 	private int[] multiClickCoordinates; //Row and Column of tile that is multiclicked
 
+	private int clicks;
+
+	private boolean cameraModeX;
+	private boolean cameraModeY;
+
+	private int cameraX;
+	private int cameraY;
+
+	private int mouseDragOriginX;
+	private int mouseDragOriginY;
+
 	public MineField(int columns, int rows, int numOfMines)
 	{
 		createNewBoard(columns, rows, numOfMines);
@@ -43,6 +55,9 @@ public class MineField //TODO Force first pick to be a blank space
 
 	void createNewBoard(int columns, int rows, int numOfMines)
 	{
+		tileWidth = 16;
+		tileHeight = 16;
+
 		this.columns = columns;
 		this.rows = rows;
 
@@ -51,9 +66,17 @@ public class MineField //TODO Force first pick to be a blank space
 
 		this.numOfMines = numOfMines;
 
+		clicks = 0;
+
 		gameStatus = -1;
 
 		for(int i = 0; i < numOfMines; i++) addRandomMine();
+
+		cameraModeX = columns * tileWidth > Settings.WIDTH_OF_SCREEN / GamePanel.SCALE;
+		cameraModeY = rows * tileHeight > Settings.HEIGHT_OF_SCREEN / GamePanel.SCALE;
+
+		cameraX = 0;
+		cameraY = 0;
 	}
 
 	private void addRandomMine()
@@ -137,6 +160,7 @@ public class MineField //TODO Force first pick to be a blank space
 		if(winFlag)
 		{
 			gameStatus = 2;
+			numOfMines = 0;
 
 			//Loop through all tiles, if a tile is amine and not flagged, set it to a flag
 			for(int columnI = 0; columnI < columns; columnI++)
@@ -226,7 +250,8 @@ public class MineField //TODO Force first pick to be a blank space
 					break;
 				}
 
-				g2d.drawImage(drawImage, column * tileWidth, row * tileHeight, tileWidth, tileHeight, null);
+				g2d.drawImage(drawImage, column * tileWidth - cameraX, row * tileHeight - cameraY,
+						tileWidth, tileHeight, null);
 			}
 		}
 
@@ -245,15 +270,29 @@ public class MineField //TODO Force first pick to be a blank space
 					e.getY() >= this.y * GamePanel.SCALE &&
 					e.getY() <= (this.y + this.tileHeight * rows) * GamePanel.SCALE)
 			{
+				clicks++;
+
 				//Get the mouseX, subtract the offset, and divide by the tile dimensions to get
 				//the row/column of where an object is
 				//tileWidth is multiplied by scale, since getX is in unscaled pixels, while the entire thing is
 				//scaled up
 
-				if(gameStatus == -1) gameStatus = 0;
+				if(gameStatus == -1)
+				{
+					if(SwingUtilities.isRightMouseButton(e) || SwingUtilities.isLeftMouseButton(e))
+						gameStatus = 0;
+				}
 
-				int column = (e.getX() - (x * GamePanel.SCALE)) / (tileWidth * GamePanel.SCALE);
-				int row = (e.getY() - (y * GamePanel.SCALE)) / (tileHeight * GamePanel.SCALE);
+				int column = (e.getX() - ((x - cameraX) * GamePanel.SCALE)) / (tileWidth * GamePanel.SCALE);
+				int row = (e.getY() - ((y - cameraY) * GamePanel.SCALE)) / (tileHeight * GamePanel.SCALE);
+
+				//TODO Add back in camera, test using WASD
+
+				if(SwingUtilities.isLeftMouseButton(e))
+				{
+					mouseDragOriginX = e.getX();
+					mouseDragOriginY = e.getY();
+				}
 
 				//Action depends on what type of tile the user clicks on
 				switch(board[column][row])
@@ -393,6 +432,29 @@ public class MineField //TODO Force first pick to be a blank space
 		multiClickFlag = false;
 	}
 
+	public void mouseDragged(MouseEvent e)
+	{
+		if(SwingUtilities.isLeftMouseButton(e))
+		{
+			if(cameraModeX) cameraX -= (e.getX() - mouseDragOriginX) / 60;
+			if(cameraModeY) cameraY -= (e.getY() - mouseDragOriginY) / 60;
+
+			if(cameraX < 0) cameraX = 0;
+			if(cameraX < 0) cameraY = 0;
+
+			if(cameraModeX)
+			{
+				if(cameraX + (Settings.WIDTH_OF_SCREEN / GamePanel.SCALE) > columns * tileWidth)
+					cameraX = (columns * tileWidth) - (Settings.WIDTH_OF_SCREEN / GamePanel.SCALE);
+			}
+			if(cameraModeY)
+			{
+				if(cameraY + (Settings.HEIGHT_OF_SCREEN / GamePanel.SCALE) > rows * tileHeight)
+					cameraY = (rows * tileWidth) - (Settings.HEIGHT_OF_SCREEN / GamePanel.SCALE);
+			}
+		}
+	}
+
 	//Click on a tile
 	private void click(int column, int row)
 	{
@@ -436,12 +498,19 @@ public class MineField //TODO Force first pick to be a blank space
 								//then the mine is not the one initially clicked on
 								(column != columnI || row != rowI))
 						{
-							//Set the other mines to the nontriggered state and the
+							//Set the other mines to the untriggered state and the
 							//clicked mine that remains -1 will be highlighted red
 							locations[columnI][rowI] = -2;
 							board[columnI][rowI] = 1;
 						}
 					}
+				}
+
+				if(clicks == 1 && locations[column][row] != 0)
+				{
+					createNewBoard(columns, rows, numOfMines);
+					clicks = 1;
+					click(column, row);
 				}
 			}
 		}

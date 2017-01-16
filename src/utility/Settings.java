@@ -8,6 +8,9 @@ public class Settings
 	public static int ROWS;
 	public static int NUMBER_OF_MINES;
 
+	public static int WIDTH_OF_SCREEN;
+	public static int HEIGHT_OF_SCREEN;
+
 	private static boolean initialized;
 
 	public static void init()

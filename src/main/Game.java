@@ -1,6 +1,9 @@
 package main;
 
+import utility.Settings;
+
 import javax.swing.*;
+import java.awt.*;
 
 public class Game
 {
@@ -23,5 +26,10 @@ public class Game
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+
+		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+
+		Settings.WIDTH_OF_SCREEN = screen.width;
+		Settings.HEIGHT_OF_SCREEN = screen.height - 96;
 	}
 }

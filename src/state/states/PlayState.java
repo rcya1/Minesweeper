@@ -61,4 +61,9 @@ public class PlayState extends State
 		mineField.mouseReleased(e);
 		topBar.mouseReleased(e);
 	}
+
+	public void mouseDragged(MouseEvent e)
+	{
+		mineField.mouseDragged(e);
+	}
 }
