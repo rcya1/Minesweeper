@@ -39,6 +39,9 @@ public class MineField //TODO Force first pick to be a blank space
 	private int cameraX;
 	private int cameraY;
 
+	private int tempCameraX;
+	private int tempCameraY;
+
 	private int mouseDragOriginX;
 	private int mouseDragOriginY;
 
@@ -77,6 +80,9 @@ public class MineField //TODO Force first pick to be a blank space
 
 		cameraX = 0;
 		cameraY = 0;
+
+		tempCameraX = 0;
+		tempCameraY = 0;
 	}
 
 	private void addRandomMine()
@@ -286,12 +292,13 @@ public class MineField //TODO Force first pick to be a blank space
 				int column = (e.getX() - ((x - cameraX) * GamePanel.SCALE)) / (tileWidth * GamePanel.SCALE);
 				int row = (e.getY() - ((y - cameraY) * GamePanel.SCALE)) / (tileHeight * GamePanel.SCALE);
 
-				//TODO Add back in camera, test using WASD
-
 				if(SwingUtilities.isLeftMouseButton(e))
 				{
 					mouseDragOriginX = e.getX();
 					mouseDragOriginY = e.getY();
+
+					tempCameraX = cameraX;
+					tempCameraY = cameraY;
 				}
 
 				//Action depends on what type of tile the user clicks on
@@ -436,8 +443,8 @@ public class MineField //TODO Force first pick to be a blank space
 	{
 		if(SwingUtilities.isLeftMouseButton(e))
 		{
-			if(cameraModeX) cameraX -= (e.getX() - mouseDragOriginX) / 60;
-			if(cameraModeY) cameraY -= (e.getY() - mouseDragOriginY) / 60;
+			if(cameraModeX) cameraX = tempCameraX - (e.getX() - mouseDragOriginX) / 2;
+			if(cameraModeY) cameraY = tempCameraY - (e.getY() - mouseDragOriginY) / 2;
 
 			if(cameraX < 0) cameraX = 0;
 			if(cameraX < 0) cameraY = 0;

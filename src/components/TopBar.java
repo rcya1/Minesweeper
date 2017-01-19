@@ -59,6 +59,7 @@ public class TopBar
 			g2d.drawImage(clockImages[i], GamePanel.WIDTH - Images.TopBar.Numbers.numberWidth * 3 - 1 +
 					i * Images.TopBar.Numbers.numberWidth, 2, null);
 		}
+
 		//TODO Add handling for negative numbers
 		BufferedImage[] numOfMinesImages = getNumberImages(mineField.getNumOfMines());
 		for(int i = 0; i < numOfMinesImages.length; i++)
