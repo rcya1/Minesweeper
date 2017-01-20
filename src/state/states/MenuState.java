@@ -16,8 +16,6 @@ public class MenuState extends State
 	private int selection;
 
 	private int optionHoverIndex;
-	private int currentStringWidth;
-	private int currentStringHeight;
 
 	public MenuState(StateManager stateManager)
 	{
@@ -116,7 +114,7 @@ public class MenuState extends State
 		case 1: //Options
 			stateManager.setState(StateManager.OPTION_STATE);
 			break;
-		case 2: //Help
+		case 2: //Tutorial
 			break;
 		case 3: //Exit
 			System.exit(0);

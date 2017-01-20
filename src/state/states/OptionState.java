@@ -24,8 +24,6 @@ public class OptionState extends State
 	private boolean sliderMouseHover;
 
 	private int optionHoverIndex;
-	private int currentStringWidth;
-	private int currentStringHeight;
 
 	public OptionState(StateManager stateManager)
 	{
@@ -100,9 +98,6 @@ public class OptionState extends State
 			int stringWidth = (int) g2d.getFontMetrics().getStringBounds(Integer.toString(values[selection]), g2d).getWidth();
 			g2d.drawString(Integer.toString(values[selection]), (GamePanel.WIDTH + stringWidth) / 2, 150);
 		}
-
-		currentStringWidth = g2d.getFontMetrics().stringWidth(options[selection]);
-		currentStringHeight = g2d.getFontMetrics().getHeight();
 	}
 
 	public void keyPressed(int key)

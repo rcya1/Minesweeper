@@ -2,7 +2,7 @@ package utility;
 
 public class Settings
 {
-	public static final int[] DEFAULT_VALUES = {9, 9, 10};
+	private static final int[] DEFAULT_VALUES = {9, 9, 10};
 
 	public static int COLUMNS;
 	public static int ROWS;
