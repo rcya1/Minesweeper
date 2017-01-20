@@ -7,6 +7,7 @@ import state.StateManager;
 import utility.Settings;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 public class PlayState extends State
@@ -43,9 +44,19 @@ public class PlayState extends State
 	public void keyPressed(int key)
 	{
 		topBar.keyPressed(key);
+
+		if(key == KeyEvent.VK_ESCAPE)
+		{
+			stateManager.setState(StateManager.MENU_STATE);
+		}
 	}
 
 	public void keyReleased(int key)
+	{
+
+	}
+
+	public void mouseMoved(MouseEvent e)
 	{
 
 	}

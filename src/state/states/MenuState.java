@@ -15,6 +15,10 @@ public class MenuState extends State
 	private String[] options;
 	private int selection;
 
+	private int optionHoverIndex;
+	private int currentStringWidth;
+	private int currentStringHeight;
+
 	public MenuState(StateManager stateManager)
 	{
 		this.stateManager = stateManager;
@@ -25,6 +29,8 @@ public class MenuState extends State
 	{
 		options = new String[] {"Play", "Setup Game", "Tutorial", "Exit"};
 		selection = 0;
+
+		optionHoverIndex = -1;
 	}
 
 	public void update()
@@ -40,7 +46,7 @@ public class MenuState extends State
 		for(int i = 0; i < options.length; i++)
 		{
 			g2d.setColor(Color.WHITE);
-			if(i == selection) g2d.setColor(Color.RED);
+			if(i == selection || i == optionHoverIndex) g2d.setColor(Color.DARK_GRAY);
 			g2d.drawString(options[i], 8, 15 + 13 * i);
 		}
 	}
@@ -80,9 +86,42 @@ public class MenuState extends State
 
 	}
 
+	public void mouseMoved(MouseEvent e)
+	{
+		Point mouse = new Point((int) e.getPoint().getX() / GamePanel.SCALE,
+				(int) e.getPoint().getY() / GamePanel.SCALE);
+
+		for(int i = 0; i < options.length; i++)
+		{
+			Rectangle optionRectangle = new Rectangle(8, 15 * i, 100, 20);
+
+			if(optionRectangle.contains(mouse))
+			{
+				optionHoverIndex = i;
+				selection = optionHoverIndex;
+				break;
+			}
+			optionHoverIndex = -1;
+		}
+	}
+
 	public void mousePressed(MouseEvent e)
 	{
-
+		switch(optionHoverIndex)
+		{
+		case 0: //Play
+			stateManager.setState(StateManager.PLAY_STATE);
+			//Check if the values are changed, and if they are, create a new window.
+			break;
+		case 1: //Options
+			stateManager.setState(StateManager.OPTION_STATE);
+			break;
+		case 2: //Help
+			break;
+		case 3: //Exit
+			System.exit(0);
+			break;
+		}
 	}
 
 	public void mouseReleased(MouseEvent e)

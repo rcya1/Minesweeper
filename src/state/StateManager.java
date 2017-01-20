@@ -79,4 +79,9 @@ public class StateManager
 	{
 		states[currentState].mouseDragged(e);
 	}
+
+	public void mouseMoved(MouseEvent e)
+	{
+		states[currentState].mouseMoved(e);
+	}
 }

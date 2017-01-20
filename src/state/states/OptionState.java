@@ -20,6 +20,13 @@ public class OptionState extends State
 	private String[] options;
 	private int selection;
 
+	private Color sliderColor;
+	private boolean sliderMouseHover;
+
+	private int optionHoverIndex;
+	private int currentStringWidth;
+	private int currentStringHeight;
+
 	public OptionState(StateManager stateManager)
 	{
 		this.stateManager = stateManager;
@@ -32,9 +39,10 @@ public class OptionState extends State
 		options = new String[]{"Number of Columns", "Number of Rows", "Number of Mines", "Confirm Changes"};
 		selection = 0;
 
-		//Calculate min and max values based on the selection.
-		//Columns/Rows are always between 5 and 99;
-		//Mines - Default - 1/8th of the area of field
+		sliderColor = Color.WHITE;
+		sliderMouseHover = false;
+
+		optionHoverIndex = -1;
 	}
 
 	public void update()
@@ -54,6 +62,15 @@ public class OptionState extends State
 			if(values[2] < minValue) values[2] = minValue;
 			if(values[2] > maxValue) values[2] = maxValue;
 		}
+
+		if(sliderColor != Color.DARK_GRAY)
+		{
+			if(sliderMouseHover)
+			{
+				sliderColor = new Color(200, 200, 200);
+			}
+			else sliderColor = Color.WHITE;
+		}
 	}
 
 	public void draw(Graphics2D g2d)
@@ -64,21 +81,28 @@ public class OptionState extends State
 		for(int i = 0; i < options.length; i++)
 		{
 			g2d.setColor(Color.WHITE);
-			if(i == selection) g2d.setColor(Color.RED);
+			if(i == selection || i == optionHoverIndex) g2d.setColor(Color.DARK_GRAY);
 			if(i != options.length - 1) g2d.drawString(options[i], 8, 15 + 15 * i);
 			else g2d.drawString(options[i], 8, 15 + 20 * i);
 		}
 
 		if(selection != (options.length - 1))
 		{
+			g2d.setColor(Color.WHITE);
+
 			g2d.setStroke(new BasicStroke(2));
 			g2d.drawLine(10, 100, 110, 100);
+
+			g2d.setColor(sliderColor);
 			int xValue = (int) ((double) (values[selection] - minValue) / (maxValue - minValue) * 100);
 			g2d.fillRect(5 + xValue - 1, 90, 5, 20);
 
-			int stringWidth = g2d.getFontMetrics().stringWidth(Integer.toString(values[selection]));
+			int stringWidth = (int) g2d.getFontMetrics().getStringBounds(Integer.toString(values[selection]), g2d).getWidth();
 			g2d.drawString(Integer.toString(values[selection]), (GamePanel.WIDTH + stringWidth) / 2, 150);
 		}
+
+		currentStringWidth = g2d.getFontMetrics().stringWidth(options[selection]);
+		currentStringHeight = g2d.getFontMetrics().getHeight();
 	}
 
 	public void keyPressed(int key)
@@ -112,25 +136,7 @@ public class OptionState extends State
 		case KeyEvent.VK_ENTER:
 			if(selection == options.length - 1)
 			{
-				stateManager.setState(StateManager.MENU_STATE);
-				Settings.COLUMNS = values[0];
-				Settings.ROWS = values[1];
-				Settings.NUMBER_OF_MINES = values[2];
-
-				int gameWidth;
-				int gameHeight;
-
-				if(values[0] * 16 <= Settings.WIDTH_OF_SCREEN / GamePanel.SCALE)
-					gameWidth = values[0] * 16;
-				else
-					gameWidth = Math.round(Settings.WIDTH_OF_SCREEN / GamePanel.SCALE);
-
-				if(values[1] * 16 + 26 <= Settings.HEIGHT_OF_SCREEN / GamePanel.SCALE)
-					gameHeight = values[1] * 16 + 26;
-				else
-					gameHeight = Math.round(Settings.HEIGHT_OF_SCREEN / GamePanel.SCALE);
-
-				Game.createNewWindow(gameWidth, gameHeight);
+				saveChanges();
 			}
 		}
 	}
@@ -140,17 +146,95 @@ public class OptionState extends State
 
 	}
 
+	public void mouseMoved(MouseEvent e)
+	{
+		Point mouse = new Point((int) e.getPoint().getX() / GamePanel.SCALE,
+				(int) e.getPoint().getY() / GamePanel.SCALE);
+
+		if(selection != options.length - 1)
+		{
+			int xValue = (int) ((double) (values[selection] - minValue) / (maxValue - minValue) * 100);
+			Rectangle sliderRectangle = new Rectangle(5 + xValue - 1, 90, 5, 20);
+
+			sliderMouseHover = sliderRectangle.contains(mouse);
+		}
+
+		for(int i = 0; i < options.length; i++)
+		{
+			Rectangle optionRectangle;
+			if(i == options.length - 1)
+			{
+				optionRectangle = new Rectangle(8, 15 + 15 * i, 100, 20);
+			}
+			else
+			{
+				optionRectangle = new Rectangle(8, 15 * i, 100, 20);
+			}
+
+			if(optionRectangle.contains(mouse))
+			{
+				optionHoverIndex = i;
+				break;
+			}
+			optionHoverIndex = -1;
+		}
+	}
+
 	public void mousePressed(MouseEvent e)
 	{
-
+		if(sliderMouseHover)
+		{
+			sliderColor = Color.DARK_GRAY;
+		}
+		if(optionHoverIndex != -1)
+		{
+			saveChanges();
+		}
 	}
 
 	public void mouseReleased(MouseEvent e)
 	{
-
+		sliderColor = Color.WHITE;
 	}
+
 	public void mouseDragged(MouseEvent e)
 	{
+		if(sliderMouseHover)
+		{
+			sliderColor = Color.DARK_GRAY;
+			values[selection] = (e.getX() / GamePanel.SCALE) - minValue;
+			if(values[selection] < minValue) values[selection] = minValue;
+			if(values[selection] > maxValue) values[selection] = maxValue;
+		}
+	}
 
+	private void saveChanges()
+	{
+		selection = optionHoverIndex;
+
+		if(selection == options.length - 1)
+		{
+			stateManager.setState(StateManager.MENU_STATE);
+			Settings.COLUMNS = values[0];
+			Settings.ROWS = values[1];
+			Settings.NUMBER_OF_MINES = values[2];
+
+			int gameWidth;
+			int gameHeight;
+
+			if(values[0] < 9) gameWidth = 9 * 16;
+			else if(values[0] * 16 <= Settings.WIDTH_OF_SCREEN / GamePanel.SCALE)
+				gameWidth = values[0] * 16;
+			else
+				gameWidth = Math.round(Settings.WIDTH_OF_SCREEN / GamePanel.SCALE);
+
+			if(values[1] < 9) gameHeight = 9 * 16;
+			else if(values[1] * 16 + 26 <= Settings.HEIGHT_OF_SCREEN / GamePanel.SCALE)
+				gameHeight = values[1] * 16 + 26;
+			else
+				gameHeight = Math.round(Settings.HEIGHT_OF_SCREEN / GamePanel.SCALE);
+
+			Game.createNewWindow(gameWidth, gameHeight);
+		}
 	}
 }

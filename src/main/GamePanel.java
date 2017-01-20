@@ -159,6 +159,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	}
 	@Override public void mouseMoved(MouseEvent e)
 	{
-
+		stateManager.mouseMoved(e);
 	}
 }
