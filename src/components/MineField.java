@@ -2,7 +2,6 @@ package components;
 
 import main.GamePanel;
 import utility.Images;
-import utility.Settings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -75,8 +74,8 @@ public class MineField //TODO Force first pick to be a blank space
 
 		for(int i = 0; i < numOfMines; i++) addRandomMine();
 
-		cameraModeX = columns * tileWidth > Settings.WIDTH_OF_SCREEN / GamePanel.SCALE;
-		cameraModeY = rows * tileHeight > Settings.HEIGHT_OF_SCREEN / GamePanel.SCALE;
+		cameraModeX = columns * tileWidth > GamePanel.WIDTH;
+		cameraModeY = rows * tileHeight > GamePanel.HEIGHT;
 
 		cameraX = 0;
 		cameraY = 0;
@@ -447,17 +446,17 @@ public class MineField //TODO Force first pick to be a blank space
 			if(cameraModeY) cameraY = tempCameraY - (e.getY() - mouseDragOriginY) / 2;
 
 			if(cameraX < 0) cameraX = 0;
-			if(cameraX < 0) cameraY = 0;
+			if(cameraY < 0) cameraY = 0;
 
 			if(cameraModeX)
 			{
-				if(cameraX + (Settings.WIDTH_OF_SCREEN / GamePanel.SCALE) > columns * tileWidth)
-					cameraX = (columns * tileWidth) - (Settings.WIDTH_OF_SCREEN / GamePanel.SCALE);
+				if(cameraX + GamePanel.WIDTH > columns * tileWidth)
+					cameraX = (columns * tileWidth) - GamePanel.WIDTH;
 			}
 			if(cameraModeY)
 			{
-				if(cameraY + (Settings.HEIGHT_OF_SCREEN / GamePanel.SCALE) > rows * tileHeight)
-					cameraY = (rows * tileWidth) - (Settings.HEIGHT_OF_SCREEN / GamePanel.SCALE);
+				if(cameraY + GamePanel.HEIGHT > rows * tileHeight)
+					cameraY = (rows * tileWidth) - GamePanel.HEIGHT;
 			}
 		}
 	}
