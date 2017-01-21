@@ -3,17 +3,19 @@ package state;
 import state.states.MenuState;
 import state.states.OptionState;
 import state.states.PlayState;
+import state.states.TutorialState;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
 public class StateManager
 {
-	private static final int NUMBER_OF_STATES = 3;
+	private static final int NUMBER_OF_STATES = 4;
 
 	public static final int MENU_STATE = 0;
 	public static final int PLAY_STATE = 1;
 	public static final int OPTION_STATE = 2;
+	public static final int TUTORIAL_STATE = 3;
 
 	private State[] states;
 	private static int currentState; //Default initializes to 0.
@@ -40,6 +42,7 @@ public class StateManager
 		if(state == MENU_STATE) states[state] = new MenuState(this);
 		else if(state == PLAY_STATE) states[state] = new PlayState(this);
 		else if(state == OPTION_STATE) states[state] = new OptionState(this);
+		else if(state == TUTORIAL_STATE) states[state] = new TutorialState(this);
 	}
 
 	public void setState(int state)

@@ -70,6 +70,7 @@ public class MenuState extends State
 				stateManager.setState(StateManager.OPTION_STATE);
 				break;
 			case 2: //Help
+				stateManager.setState(StateManager.TUTORIAL_STATE);
 				break;
 			case 3: //Exit
 				System.exit(0);
@@ -91,7 +92,7 @@ public class MenuState extends State
 
 		for(int i = 0; i < options.length; i++)
 		{
-			Rectangle optionRectangle = new Rectangle(8, 15 * i, 100, 20);
+			Rectangle optionRectangle = new Rectangle(8, 13 * i, 100, 20);
 
 			if(optionRectangle.contains(mouse))
 			{
@@ -115,6 +116,7 @@ public class MenuState extends State
 			stateManager.setState(StateManager.OPTION_STATE);
 			break;
 		case 2: //Tutorial
+			stateManager.setState(StateManager.TUTORIAL_STATE);
 			break;
 		case 3: //Exit
 			System.exit(0);
