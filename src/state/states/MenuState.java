@@ -41,6 +41,8 @@ public class MenuState extends State
 		g2d.setColor(Color.GRAY);
 		g2d.fillRect(0, 0, GamePanel.WIDTH, GamePanel.HEIGHT);
 
+		g2d.setFont(new Font("Default", Font.PLAIN, 12));
+
 		for(int i = 0; i < options.length; i++)
 		{
 			g2d.setColor(Color.WHITE);

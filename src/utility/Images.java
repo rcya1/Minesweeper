@@ -21,6 +21,8 @@ public class Images
 		return null;
 	}
 
+	public static final BufferedImage CURSOR = loadSingleImage("/Cursor.png");
+
 	public static class TopBar
 	{
 		public static class Faces

@@ -22,7 +22,7 @@ public class TutorialState extends State
 
 	public void init()
 	{
-		tutorial = new Tutorial();
+		tutorial = new Tutorial(stateManager);
 	}
 
 	public void update()

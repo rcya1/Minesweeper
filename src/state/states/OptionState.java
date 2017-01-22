@@ -87,6 +87,7 @@ public class OptionState extends State
 		if(selection != (options.length - 1))
 		{
 			g2d.setColor(Color.WHITE);
+			g2d.setFont(new Font("Default", Font.PLAIN, 12));
 
 			g2d.setStroke(new BasicStroke(2));
 			g2d.drawLine(10, 100, 110, 100);

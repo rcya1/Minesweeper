@@ -1,6 +1,7 @@
 package components;
 
 import main.GamePanel;
+import state.StateManager;
 import utility.Images;
 
 import java.awt.*;
@@ -8,9 +9,12 @@ import java.awt.event.KeyEvent;
 
 public class Tutorial
 {
+	private StateManager stateManager;
+
 	private int slide;
 	private int tick;
 	private int stringIndex;
+	private int subStringIndex;
 
 	private int cursorX;
 	private int cursorY;
@@ -19,10 +23,13 @@ public class Tutorial
 
 	private MineField mineField;
 
-	public Tutorial()
+	public Tutorial(StateManager stateManager)
 	{
+		this.stateManager = stateManager;
+
 		slide = 0;
 		tick = 0;
+		subStringIndex = 0;
 
 		cursorX = 0;
 		cursorY = 0;
@@ -35,19 +42,21 @@ public class Tutorial
 						"Let's Begin!"
 				},
 				{
-
+					"The point of Minesweeper is\nto click all of the squares.",
+						"As you can see, all of the\nsquares were cleared."
 				},
 				{
-
+					"However, winning is\nnot that easy.",
+						"There are mines randomly\nplaced on the field.",
+						"A mine was clicked,\nand the game ended."
 				},
 				{
-
+					"To find mines, use\nthe numbers as clues!",
+						"The number 3 means there\nare 3 mines around this tile.",
+						"You can mark mines,\nso you don't click on them."
 				},
 				{
-
-				},
-				{
-
+					"Using logic, you can\nbeat Minesweeper!",
 				}};
 	}
 
@@ -61,9 +70,9 @@ public class Tutorial
 			break;
 		}
 
-		//CIRCLE SWAG
-//		cursorX = (int) (50 + 20 * Math.cos(tick));
-//		cursorY = (int) (50 + 20 * Math.sin(tick));
+//		CIRCLE SWAG
+		cursorX = (int) (50 + -20 * Math.cos((double) tick / 8));
+		cursorY = (int) (50 + 20 * Math.sin((double) tick / 8));
 
 		tick++;
 	}
@@ -76,15 +85,32 @@ public class Tutorial
 		{
 		case 0:
 			if(mineField != null) mineField.draw(g2d);
-			drawString = text[slide][stringIndex];
-
-			g2d.setColor(Color.BLACK);
-			g2d.setFont(new Font("Times New Roman", Font.PLAIN, 11));
-			drawCenteredSplitString(g2d, drawString, GamePanel.HEIGHT - 30);
+			break;
+		case 1:
+			if(mineField != null) mineField.draw(g2d);
+			break;
+		case 2:
+			if(mineField != null) mineField.draw(g2d);
+			break;
+		case 3:
+			if(mineField != null) mineField.draw(g2d);
+			break;
+		case 4:
+			if(mineField != null) mineField.draw(g2d);
 			break;
 		}
 
-		g2d.drawImage(Images.TopBar.Faces.WIN, cursorX, cursorY, null);
+		drawString = text[slide][stringIndex].substring(0, subStringIndex);
+
+		g2d.setColor(Color.BLACK);
+		g2d.setFont(new Font("Default", Font.PLAIN, 10));
+		drawCenteredSplitString(g2d, drawString, GamePanel.HEIGHT - 30);
+
+		if(tick % 2 == 0) subStringIndex++;
+		if(subStringIndex >= text[slide][stringIndex].length())
+			subStringIndex = text[slide][stringIndex].length();
+
+		g2d.drawImage(Images.CURSOR, cursorX, cursorY, null);
 	}
 
 	//Draws a string centered
@@ -94,7 +120,7 @@ public class Tutorial
 		{
 			int stringWidth = (int) g2d.getFontMetrics().getStringBounds(line, g2d).getWidth();
 			g2d.drawString(line, (GamePanel.WIDTH - stringWidth) / 2,
-					y += g2d.getFontMetrics().getHeight());
+					5 + (y += (g2d.getFontMetrics().getHeight() - 4)));
 		}
 	}
 
@@ -108,8 +134,12 @@ public class Tutorial
 			{
 				stringIndex = 0;
 				slide++;
-				if(slide >= text.length) slide = text.length - 1;
+				if(slide >= text.length)
+				{
+					stateManager.setState(StateManager.MENU_STATE);
+				}
 			}
+			subStringIndex = 0;
 
 			break;
 		}
