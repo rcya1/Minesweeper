@@ -13,6 +13,7 @@ public class Tutorial
 
 	private int slide;
 	private int tick;
+
 	private int stringIndex;
 	private int subStringIndex;
 
@@ -29,10 +30,11 @@ public class Tutorial
 
 		slide = 0;
 		tick = 0;
+
 		subStringIndex = 0;
 
-		cursorX = 0;
-		cursorY = 0;
+		cursorX = 2;
+		cursorY = 4;
 
 		text = new String[][] {
 				{
@@ -42,8 +44,10 @@ public class Tutorial
 						"Let's Begin!"
 				},
 				{
-					"The point of Minesweeper is\nto click all of the squares.",
-						"As you can see, all of the\nsquares were cleared."
+					"The point of Minesweeper is\nto clear all of the squares.",
+						"As you can see, when\nyou click on a square,",
+						"the square displays\nsome information.",
+						"To win, clear all\nof the squares!"
 				},
 				{
 					"However, winning is\nnot that easy.",
@@ -52,7 +56,8 @@ public class Tutorial
 				},
 				{
 					"To find mines, use\nthe numbers as clues!",
-						"The number 3 means there\nare 3 mines around this tile.",
+						"The number 2 means there\nare 2 mines around this tile.",
+						"Therefore, these\nhave to be mines.",
 						"You can mark mines,\nso you don't click on them."
 				},
 				{
@@ -66,13 +71,73 @@ public class Tutorial
 		{
 		case 0:
 			if(mineField == null) mineField = new MineField(9, 9, 10);
-			mineField.update();
+			break;
+		case 1:
+			if(mineField == null) mineField = new MineField(9, 9, 0);
+			if(stringIndex <= 2) moveCursorTo(22, 64, 8);
+			else moveCursorTo(38, 64, 8);
+
+			mineField.setValue(1, 4, -1);
+			mineField.setValue(2, 4, -1);
+			mineField.refreshNumbers();
+
+			if(stringIndex == 1) mineField.click(1, 3);
+			if(stringIndex == 3) mineField.click(2, 3);
+
+			break;
+		case 2:
+			if(mineField == null) mineField = new MineField(9, 9, 10);
+			mineField.setValue(1, 3, 1);
+			mineField.setValue(4, 5, -1);
+
+			mineField.click(1, 3);
+
+			moveCursorTo(72, 96, 8);
+			if(stringIndex == 1) mineField.click(4, 5);
+			break;
+		case 3:
+			if(mineField == null) mineField = new MineField(9, 9, 10);
+			mineField.setValue(1, 1, 2);
+			mineField.setValue(0, 0, -1);
+			mineField.setValue(1, 0, -1);
+			mineField.setValue(2, 0, 1);
+			mineField.setValue(0, 1, 2);
+			mineField.setValue(2, 1, 1);
+			mineField.setValue(0, 2, 1);
+			mineField.setValue(1, 2, 1);
+			mineField.setValue(2, 2, 1);
+
+			mineField.click(1, 1);
+			mineField.click(0, 1);
+			mineField.click(2, 1);
+			mineField.click(0, 2);
+			mineField.click(1, 2);
+			mineField.click(2, 2);
+			mineField.click(2, 0);
+
+			if(stringIndex == 1) moveCursorTo(12, 16, 4);
+			if(stringIndex == 2)
+			{
+				moveCursorTo(0, 4, 4);
+				mineField.setFlag(0, 0);
+			}
+			if(stringIndex == 3)
+			{
+				moveCursorTo(20, 4, 4);
+				mineField.setFlag(1, 0);
+			}
+			break;
+		case 4:
+			if(mineField == null) mineField = new MineField(9, 9, 10);
+			break;
+		case 5:
+			if(mineField == null) mineField = new MineField(9, 9, 10);
 			break;
 		}
 
 //		CIRCLE SWAG
-		cursorX = (int) (50 + -20 * Math.cos((double) tick / 8));
-		cursorY = (int) (50 + 20 * Math.sin((double) tick / 8));
+//		cursorX = (int) (50 + -20 * Math.cos((double) tick / 8));
+//		cursorY = (int) (50 + 20 * Math.sin((double) tick / 8));
 
 		tick++;
 	}
@@ -96,6 +161,9 @@ public class Tutorial
 			if(mineField != null) mineField.draw(g2d);
 			break;
 		case 4:
+			if(mineField != null) mineField.draw(g2d);
+			break;
+		case 5:
 			if(mineField != null) mineField.draw(g2d);
 			break;
 		}
@@ -134,14 +202,30 @@ public class Tutorial
 			{
 				stringIndex = 0;
 				slide++;
+
+				mineField = null;
 				if(slide >= text.length)
 				{
 					stateManager.setState(StateManager.MENU_STATE);
 				}
 			}
 			subStringIndex = 0;
-
 			break;
+		}
+	}
+
+	private void moveCursorTo(int x, int y, int ticks)
+	{
+//		if(Math.abs(x - cursorX) < 5 || Math.abs(y - cursorY) < 5)
+//		{
+//			cursorX = x;
+//			cursorY = y;
+//		}
+
+		if(cursorX != x && cursorY != y)
+		{
+			cursorX += (x - cursorX) / ticks;
+			cursorY += (y - cursorY) / ticks;
 		}
 	}
 }

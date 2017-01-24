@@ -141,6 +141,63 @@ public class MineField //TODO Force first pick to be a blank space
 		else addRandomMine();
 	}
 
+	void refreshNumbers()
+	{
+		for(int column = 0; column < columns; column++)
+		{
+			for(int row = 0; row < rows; row++)
+			{
+				if(locations[column][row] != -1) locations[column][row] = 0;
+			}
+		}
+		for(int column = 0; column < columns; column++)
+		{
+			for(int row = 0; row < rows; row++)
+			{
+				if(locations[column][row] == -1)
+				{
+					boolean leftAvailable = column - 1 >= 0;
+					boolean rightAvailable = column + 1 < columns;
+					boolean topAvailable = row - 1 >= 0;
+					boolean bottomAvailable = row + 1 < rows;
+
+					if(leftAvailable)
+					{
+						if(locations[column - 1][row] != -1) locations[column - 1][row]++;
+						if(topAvailable)
+						{
+							if(locations[column - 1][row - 1] != -1) locations[column - 1][row - 1]++;
+						}
+						if(bottomAvailable)
+						{
+							if(locations[column - 1][row + 1] != -1) locations[column - 1][row + 1]++;
+						}
+					}
+					if(rightAvailable)
+					{
+						if(locations[column + 1][row] != -1) locations[column + 1][row]++;
+						if(topAvailable)
+						{
+							if(locations[column + 1][row - 1] != -1) locations[column + 1][row - 1]++;
+						}
+						if(bottomAvailable)
+						{
+							if(locations[column + 1][row + 1] != -1) locations[column + 1][row + 1]++;
+						}
+					}
+					if(topAvailable)
+					{
+						if(locations[column][row - 1] != -1) locations[column][row - 1]++;
+					}
+					if(bottomAvailable)
+					{
+						if(locations[column][row + 1] != -1) locations[column][row + 1]++;
+					}
+				}
+			}
+		}
+	}
+
 	public void update()
 	{
 		//Set to false when the win conditions are not met
@@ -275,8 +332,6 @@ public class MineField //TODO Force first pick to be a blank space
 					e.getY() >= this.y * GamePanel.SCALE &&
 					e.getY() <= (this.y + this.tileHeight * rows) * GamePanel.SCALE)
 			{
-				clicks++;
-
 				//Get the mouseX, subtract the offset, and divide by the tile dimensions to get
 				//the row/column of where an object is
 				//tileWidth is multiplied by scale, since getX is in unscaled pixels, while the entire thing is
@@ -462,8 +517,9 @@ public class MineField //TODO Force first pick to be a blank space
 	}
 
 	//Click on a tile
-	private void click(int column, int row)
+	void click(int column, int row)
 	{
+		clicks++;
 		//If the tile is not already pressed and it is not flagged
 		if(!(board[column][row] == 1 || board[column][row] == 2 || board[column][row] == 5))
 		{
@@ -540,6 +596,16 @@ public class MineField //TODO Force first pick to be a blank space
 		}
 		if(row - 1 >= 0) click(column, row - 1);
 		if(row + 1 < rows) click(column, row + 1);
+	}
+
+	void setValue(int column, int row, int value)
+	{
+		locations[column][row] = value;
+	}
+
+	void setFlag(int column, int row)
+	{
+		board[column][row] = 2;
 	}
 
 	//Set the coordinates of the mineField for drawing
