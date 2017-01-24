@@ -92,98 +92,49 @@ public class MenuState extends State
 		case 0:
 			g2d.drawImage(Images.Tiles.FLAG, (originalX > newX) ? originalX : newX,
 					100, 32, 32, null);
-
-			switch(originalOption)
-			{
-			case 1:
-				g2d.drawImage(Images.Tiles.Numbers.EIGHT, (originalX < newX) ? originalX : newX,
-						100, 32, 32, null);
-				break;
-			case 2:
-				g2d.drawImage(Images.Tiles.QUESTION, (originalX < newX) ? originalX : newX,
-						100, 32, 32, null);
-				break;
-			case 3:
-				g2d.drawImage(Images.Tiles.MINE_TRIGGERED, (originalX < newX) ? originalX : newX,
-						100, 32, 32, null);
-				break;
-			default:
-				g2d.drawImage(Images.Tiles.FLAG, (originalX < newX) ? originalX : newX,
-						100, 32, 32, null);
-				break;
-			}
 			break;
 
 		case 1:
 			g2d.drawImage(Images.Tiles.Numbers.EIGHT, (originalX > newX) ? originalX : newX,
 					100, 32, 32, null);
-
-			switch(originalOption)
-			{
-			case 0:
-				g2d.drawImage(Images.Tiles.FLAG, (originalX < newX) ? originalX : newX,
-						100, 32, 32, null);
-				break;
-			case 2:
-				g2d.drawImage(Images.Tiles.QUESTION, (originalX < newX) ? originalX : newX,
-						100, 32, 32, null);
-				break;
-			case 3:
-				g2d.drawImage(Images.Tiles.MINE_TRIGGERED, (originalX < newX) ? originalX : newX,
-						100, 32, 32, null);
-				break;
-			default:
-				g2d.drawImage(Images.Tiles.Numbers.EIGHT, (originalX < newX) ? originalX : newX,
-						100, 32, 32, null);
-				break;
-			}
 			break;
 
 		case 2:
 			g2d.drawImage(Images.Tiles.QUESTION, (originalX > newX) ? originalX : newX,
 					100, 32, 32, null);
-
-			switch(originalOption)
-			{
-			case 0:
-				g2d.drawImage(Images.Tiles.FLAG, (originalX < newX) ? originalX : newX,
-						100, 32, 32, null);
-			case 1:
-				g2d.drawImage(Images.Tiles.Numbers.EIGHT, (originalX < newX) ? originalX : newX,
-						100, 32, 32, null);
-				break;
-			case 3:
-				g2d.drawImage(Images.Tiles.MINE_TRIGGERED, (originalX < newX) ? originalX : newX,
-						100, 32, 32, null);
-				break;
-			default:
-				g2d.drawImage(Images.Tiles.QUESTION, (originalX < newX) ? originalX : newX,
-						100, 32, 32, null);
-				break;
-			}
 			break;
+
 		case 3:
 			g2d.drawImage(Images.Tiles.MINE_TRIGGERED, (originalX > newX) ? originalX : newX,
 					100, 32, 32, null);
+			break;
+		}
 
-			switch(originalOption)
-			{
-			case 0:
-				g2d.drawImage(Images.Tiles.FLAG, (originalX < newX) ? originalX : newX,
-						100, 32, 32, null);
-			case 1:
-				g2d.drawImage(Images.Tiles.Numbers.EIGHT, (originalX < newX) ? originalX : newX,
-						100, 32, 32, null);
-				break;
-			case 2:
-				g2d.drawImage(Images.Tiles.QUESTION, (originalX < newX) ? originalX : newX,
-						100, 32, 32, null);
-				break;
-			default:
-				g2d.drawImage(Images.Tiles.MINE_TRIGGERED, (originalX < newX) ? originalX : newX,
-						100, 32, 32, null);
-				break;
-			}
+		switch(originalOption)
+		{
+		case 0:
+			g2d.drawImage(Images.Tiles.FLAG, (originalX < newX) ? originalX : newX,
+					100, 32, 32, null);
+			break;
+
+		case 1:
+			g2d.drawImage(Images.Tiles.Numbers.EIGHT, (originalX < newX) ? originalX : newX,
+					100, 32, 32, null);
+			break;
+
+		case 2:
+			g2d.drawImage(Images.Tiles.QUESTION, (originalX < newX) ? originalX : newX,
+					100, 32, 32, null);
+			break;
+
+		case 3:
+			g2d.drawImage(Images.Tiles.MINE_TRIGGERED, (originalX < newX) ? originalX : newX,
+					100, 32, 32, null);
+			break;
+
+		default:
+			g2d.drawImage(Images.Tiles.QUESTION, (originalX < newX) ? originalX : newX,
+					100, 32, 32, null);
 			break;
 		}
 	}
@@ -196,20 +147,25 @@ public class MenuState extends State
 		{
 		case KeyEvent.VK_UP:
 			if(originalOption == -1) originalOption = selection;
+
 			if(selection > 0) selection--;
+
 			if(previousSelection != selection) isMoving = true;
 			break;
+
 		case KeyEvent.VK_DOWN:
 			if(originalOption == -1) originalOption = selection;
+
 			if(selection < options.length - 1) selection++;
+
 			if(previousSelection != selection) isMoving = true;
 			break;
+
 		case KeyEvent.VK_ENTER:
 			switch(selection)
 			{
 			case 0: //Play
 				stateManager.setState(StateManager.PLAY_STATE);
-				//Check if the values are changed, and if they are, create a new window.
 				break;
 			case 1: //Options
 				stateManager.setState(StateManager.OPTION_STATE);
@@ -242,8 +198,10 @@ public class MenuState extends State
 			if(optionRectangle.contains(mouse))
 			{
 				optionHoverIndex = i;
+
 				if(optionHoverIndex != selection) isMoving = true;
 				if(originalOption == -1 && originalOption != selection) originalOption = selection;
+
 				selection = optionHoverIndex;
 				break;
 			}
