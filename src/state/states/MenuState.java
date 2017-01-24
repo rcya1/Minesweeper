@@ -71,8 +71,6 @@ public class MenuState extends State
 				}
 			}
 		}
-
-		System.out.println(originalOption);
 	}
 
 	public void draw(Graphics2D g2d)
