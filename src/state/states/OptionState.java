@@ -93,11 +93,14 @@ public class OptionState extends State
 			g2d.drawLine(10, 100, 110, 100);
 
 			g2d.setColor(sliderColor);
-			int xValue = (int) ((double) (values[selection] - minValue) / (maxValue - minValue) * 100);
+			int xValue = (int) ((double) (values[selection] - minValue) /
+					(maxValue - minValue) * 100);
 			g2d.fillRect(5 + xValue - 1, 90, 5, 20);
 
-			int stringWidth = (int) g2d.getFontMetrics().getStringBounds(Integer.toString(values[selection]), g2d).getWidth();
-			g2d.drawString(Integer.toString(values[selection]), (GamePanel.WIDTH + stringWidth) / 2, 150);
+			int stringWidth = (int) g2d.getFontMetrics().getStringBounds(
+					Integer.toString(values[selection]), g2d).getWidth();
+			g2d.drawString(Integer.toString(values[selection]),
+					(GamePanel.WIDTH + stringWidth) / 2, 150);
 		}
 	}
 
@@ -113,6 +116,7 @@ public class OptionState extends State
 				values[2] = (values[0] * values[1]) / 8;
 			}
 			break;
+
 		case KeyEvent.VK_DOWN:
 			if(selection < options.length - 1) selection++;
 
@@ -121,14 +125,17 @@ public class OptionState extends State
 				values[2] = (values[0] * values[1]) / 8;
 			}
 			break;
+
 		case KeyEvent.VK_RIGHT:
 			if(selection != (options.length - 1)) values[selection]++;
 			if(values[selection] > maxValue) values[selection] = maxValue;
 			break;
+
 		case KeyEvent.VK_LEFT:
 			if(selection != (options.length - 1)) values[selection]--;
 			if(values[selection] < minValue) values[selection] = minValue;
 			break;
+
 		case KeyEvent.VK_ENTER:
 			if(selection == options.length - 1)
 			{
