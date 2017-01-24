@@ -192,17 +192,19 @@ public class MenuState extends State
 
 	public void keyPressed(int key)
 	{
+		int previousSelection = selection;
+
 		switch(key)
 		{
 		case KeyEvent.VK_UP:
 			if(originalOption == -1) originalOption = selection;
 			if(selection > 0) selection--;
-			isMoving = true;
+			if(previousSelection != selection) isMoving = true;
 			break;
 		case KeyEvent.VK_DOWN:
 			if(originalOption == -1) originalOption = selection;
 			if(selection < options.length - 1) selection++;
-			isMoving = true;
+			if(previousSelection != selection) isMoving = true;
 			break;
 		case KeyEvent.VK_ENTER:
 			switch(selection)
