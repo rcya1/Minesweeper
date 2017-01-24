@@ -54,7 +54,7 @@ public class TutorialState extends State
 
 	public void mousePressed(MouseEvent e)
 	{
-
+		tutorial.mousePressed();
 	}
 
 	public void mouseReleased(MouseEvent e)

@@ -214,6 +214,23 @@ public class Tutorial
 		}
 	}
 
+	public void mousePressed()
+	{
+		stringIndex++;
+		if(stringIndex >= text[slide].length)
+		{
+			stringIndex = 0;
+			slide++;
+
+			mineField = null;
+			if(slide >= text.length)
+			{
+				stateManager.setState(StateManager.MENU_STATE);
+			}
+		}
+		subStringIndex = 0;
+	}
+
 	private void moveCursorTo(int x, int y, int ticks)
 	{
 //		if(Math.abs(x - cursorX) < 5 || Math.abs(y - cursorY) < 5)
