@@ -3,6 +3,7 @@ package state.states;
 import main.GamePanel;
 import state.State;
 import state.StateManager;
+import utility.Images;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -10,12 +11,16 @@ import java.awt.event.MouseEvent;
 
 public class MenuState extends State
 {
-	//Idea - Have an icon on the side that slides when changing the options
-
 	private String[] options;
 	private int selection;
 
 	private int optionHoverIndex;
+
+	private int originalX;
+	private int newX;
+
+	private boolean isMoving;
+	private int originalOption;
 
 	public MenuState(StateManager stateManager)
 	{
@@ -29,11 +34,45 @@ public class MenuState extends State
 		selection = 0;
 
 		optionHoverIndex = -1;
+
+		originalX = (GamePanel.WIDTH - 32) / 2;
+		newX = GamePanel.WIDTH;
+
+		originalOption = -1;
 	}
 
 	public void update()
 	{
+		if(isMoving)
+		{
+			originalX -= 2;
+			newX -= 2;
 
+			if(originalX < newX)
+			{
+				if(originalX == -32)
+				{
+					isMoving = false;
+					newX = (GamePanel.WIDTH - 32) / 2;
+					originalX = GamePanel.WIDTH;
+
+					originalOption = -1;
+				}
+			}
+			else
+			{
+				if(newX == -32)
+				{
+					isMoving = false;
+					originalX = (GamePanel.WIDTH - 32) / 2;
+					newX = GamePanel.WIDTH;
+
+					originalOption = -1;
+				}
+			}
+		}
+
+		System.out.println(originalOption);
 	}
 
 	public void draw(Graphics2D g2d)
@@ -49,6 +88,106 @@ public class MenuState extends State
 			if(i == selection || i == optionHoverIndex) g2d.setColor(Color.DARK_GRAY);
 			g2d.drawString(options[i], 8, 15 + 13 * i);
 		}
+
+		switch(selection)
+		{
+		case 0:
+			g2d.drawImage(Images.Tiles.FLAG, (originalX > newX) ? originalX : newX,
+					100, 32, 32, null);
+
+			switch(originalOption)
+			{
+			case 1:
+				g2d.drawImage(Images.Tiles.Numbers.EIGHT, (originalX < newX) ? originalX : newX,
+						100, 32, 32, null);
+				break;
+			case 2:
+				g2d.drawImage(Images.Tiles.QUESTION, (originalX < newX) ? originalX : newX,
+						100, 32, 32, null);
+				break;
+			case 3:
+				g2d.drawImage(Images.Tiles.MINE_TRIGGERED, (originalX < newX) ? originalX : newX,
+						100, 32, 32, null);
+				break;
+			default:
+				g2d.drawImage(Images.Tiles.FLAG, (originalX < newX) ? originalX : newX,
+						100, 32, 32, null);
+				break;
+			}
+			break;
+
+		case 1:
+			g2d.drawImage(Images.Tiles.Numbers.EIGHT, (originalX > newX) ? originalX : newX,
+					100, 32, 32, null);
+
+			switch(originalOption)
+			{
+			case 0:
+				g2d.drawImage(Images.Tiles.FLAG, (originalX < newX) ? originalX : newX,
+						100, 32, 32, null);
+				break;
+			case 2:
+				g2d.drawImage(Images.Tiles.QUESTION, (originalX < newX) ? originalX : newX,
+						100, 32, 32, null);
+				break;
+			case 3:
+				g2d.drawImage(Images.Tiles.MINE_TRIGGERED, (originalX < newX) ? originalX : newX,
+						100, 32, 32, null);
+				break;
+			default:
+				g2d.drawImage(Images.Tiles.Numbers.EIGHT, (originalX < newX) ? originalX : newX,
+						100, 32, 32, null);
+				break;
+			}
+			break;
+
+		case 2:
+			g2d.drawImage(Images.Tiles.QUESTION, (originalX > newX) ? originalX : newX,
+					100, 32, 32, null);
+
+			switch(originalOption)
+			{
+			case 0:
+				g2d.drawImage(Images.Tiles.FLAG, (originalX < newX) ? originalX : newX,
+						100, 32, 32, null);
+			case 1:
+				g2d.drawImage(Images.Tiles.Numbers.EIGHT, (originalX < newX) ? originalX : newX,
+						100, 32, 32, null);
+				break;
+			case 3:
+				g2d.drawImage(Images.Tiles.MINE_TRIGGERED, (originalX < newX) ? originalX : newX,
+						100, 32, 32, null);
+				break;
+			default:
+				g2d.drawImage(Images.Tiles.QUESTION, (originalX < newX) ? originalX : newX,
+						100, 32, 32, null);
+				break;
+			}
+			break;
+		case 3:
+			g2d.drawImage(Images.Tiles.MINE_TRIGGERED, (originalX > newX) ? originalX : newX,
+					100, 32, 32, null);
+
+			switch(originalOption)
+			{
+			case 0:
+				g2d.drawImage(Images.Tiles.FLAG, (originalX < newX) ? originalX : newX,
+						100, 32, 32, null);
+			case 1:
+				g2d.drawImage(Images.Tiles.Numbers.EIGHT, (originalX < newX) ? originalX : newX,
+						100, 32, 32, null);
+				break;
+			case 2:
+				g2d.drawImage(Images.Tiles.QUESTION, (originalX < newX) ? originalX : newX,
+						100, 32, 32, null);
+				break;
+			default:
+				g2d.drawImage(Images.Tiles.MINE_TRIGGERED, (originalX < newX) ? originalX : newX,
+						100, 32, 32, null);
+				break;
+			}
+			break;
+		}
 	}
 
 	public void keyPressed(int key)
@@ -56,10 +195,14 @@ public class MenuState extends State
 		switch(key)
 		{
 		case KeyEvent.VK_UP:
+			if(originalOption == -1) originalOption = selection;
 			if(selection > 0) selection--;
+			isMoving = true;
 			break;
 		case KeyEvent.VK_DOWN:
+			if(originalOption == -1) originalOption = selection;
 			if(selection < options.length - 1) selection++;
+			isMoving = true;
 			break;
 		case KeyEvent.VK_ENTER:
 			switch(selection)
@@ -99,6 +242,8 @@ public class MenuState extends State
 			if(optionRectangle.contains(mouse))
 			{
 				optionHoverIndex = i;
+				if(optionHoverIndex != selection) isMoving = true;
+				if(originalOption == -1 && originalOption != selection) originalOption = selection;
 				selection = optionHoverIndex;
 				break;
 			}
