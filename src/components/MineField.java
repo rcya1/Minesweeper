@@ -84,120 +84,6 @@ public class MineField //TODO Force first pick to be a blank space
 		tempCameraY = 0;
 	}
 
-	private void addRandomMine()
-	{
-		//Generate random value using Math.random(), which goes 0-1
-		//Cast to int truncates the value, so 0 has an equal chance
-		//Normally, we add one to the column and row, but because they are indices, we don't
-		int column = (int) (Math.random() * columns);
-		int row = (int) (Math.random() * rows);
-
-		//Ensure location chosen is not a mine
-		if(locations[column][row] != -1)
-		{
-			locations[column][row] = -1;
-
-			//Determine which sides are free
-			//Add one to all surrounding blocks to generate the number clues
-			boolean leftAvailable = column - 1 >= 0;
-			boolean rightAvailable = column + 1 < columns;
-			boolean topAvailable = row - 1 >= 0;
-			boolean bottomAvailable = row + 1 < rows;
-
-			if(leftAvailable)
-			{
-				if(locations[column - 1][row] != -1) locations[column - 1][row]++;
-				if(topAvailable)
-				{
-					if(locations[column - 1][row - 1] != -1) locations[column - 1][row - 1]++;
-				}
-				if(bottomAvailable)
-				{
-					if(locations[column - 1][row + 1] != -1) locations[column - 1][row + 1]++;
-				}
-			}
-			if(rightAvailable)
-			{
-				if(locations[column + 1][row] != -1) locations[column + 1][row]++;
-				if(topAvailable)
-				{
-					if(locations[column + 1][row - 1] != -1) locations[column + 1][row - 1]++;
-				}
-				if(bottomAvailable)
-				{
-					if(locations[column + 1][row + 1] != -1) locations[column + 1][row + 1]++;
-				}
-			}
-			if(topAvailable)
-			{
-				if(locations[column][row - 1] != -1) locations[column][row - 1]++;
-			}
-			if(bottomAvailable)
-			{
-				if(locations[column][row + 1] != -1) locations[column][row + 1]++;
-			}
-		}
-		//If the random coordinates go to a mine, then generate a new mine
-		else addRandomMine();
-	}
-
-	void refreshNumbers()
-	{
-		for(int column = 0; column < columns; column++)
-		{
-			for(int row = 0; row < rows; row++)
-			{
-				if(locations[column][row] != -1) locations[column][row] = 0;
-			}
-		}
-		for(int column = 0; column < columns; column++)
-		{
-			for(int row = 0; row < rows; row++)
-			{
-				if(locations[column][row] == -1)
-				{
-					boolean leftAvailable = column - 1 >= 0;
-					boolean rightAvailable = column + 1 < columns;
-					boolean topAvailable = row - 1 >= 0;
-					boolean bottomAvailable = row + 1 < rows;
-
-					if(leftAvailable)
-					{
-						if(locations[column - 1][row] != -1) locations[column - 1][row]++;
-						if(topAvailable)
-						{
-							if(locations[column - 1][row - 1] != -1) locations[column - 1][row - 1]++;
-						}
-						if(bottomAvailable)
-						{
-							if(locations[column - 1][row + 1] != -1) locations[column - 1][row + 1]++;
-						}
-					}
-					if(rightAvailable)
-					{
-						if(locations[column + 1][row] != -1) locations[column + 1][row]++;
-						if(topAvailable)
-						{
-							if(locations[column + 1][row - 1] != -1) locations[column + 1][row - 1]++;
-						}
-						if(bottomAvailable)
-						{
-							if(locations[column + 1][row + 1] != -1) locations[column + 1][row + 1]++;
-						}
-					}
-					if(topAvailable)
-					{
-						if(locations[column][row - 1] != -1) locations[column][row - 1]++;
-					}
-					if(bottomAvailable)
-					{
-						if(locations[column][row + 1] != -1) locations[column][row + 1]++;
-					}
-				}
-			}
-		}
-	}
-
 	public void update()
 	{
 		//Set to false when the win conditions are not met
@@ -236,89 +122,6 @@ public class MineField //TODO Force first pick to be a blank space
 				}
 			}
 		}
-	}
-
-	public void draw(Graphics2D g2d)
-	{
-		g2d.setColor(Color.LIGHT_GRAY);
-		g2d.fillRect(0, 0, GamePanel.WIDTH, GamePanel.HEIGHT);
-
-		//Offset the drawing by a certain amount
-		AffineTransform transform = g2d.getTransform();
-		g2d.translate(x, y);
-
-		//Go through every tile and find out which sprite it corresponds to, and draw it
-		for(int column = 0; column < columns; column++)
-		{
-			for(int row = 0; row < rows; row++)
-			{
-				BufferedImage drawImage = null;
-
-				switch(board[column][row])
-				{
-				case 0:
-					drawImage = Images.Tiles.EMPTY;
-					break;
-				case 1:
-					//If the tile has been pressed, draw a different tile depending on what is underneath
-					switch(locations[column][row])
-					{
-					case 0:
-						drawImage = Images.Tiles.PRESSED;
-						break;
-					case -1:
-						drawImage = Images.Tiles.MINE_TRIGGERED;
-						break;
-					case -2:
-						drawImage = Images.Tiles.MINE_UNTRIGGERED;
-						break;
-					case 1:
-						drawImage = Images.Tiles.Numbers.ONE;
-						break;
-					case 2:
-						drawImage = Images.Tiles.Numbers.TWO;
-						break;
-					case 3:
-						drawImage = Images.Tiles.Numbers.THREE;
-						break;
-					case 4:
-						drawImage = Images.Tiles.Numbers.FOUR;
-						break;
-					case 5:
-						drawImage = Images.Tiles.Numbers.FIVE;
-						break;
-					case 6:
-						drawImage = Images.Tiles.Numbers.SIX;
-						break;
-					case 7:
-						drawImage = Images.Tiles.Numbers.SEVEN;
-						break;
-					case 8:
-						drawImage = Images.Tiles.Numbers.EIGHT;
-						break;
-					}
-					break;
-				case 2:
-					drawImage = Images.Tiles.FLAG;
-					break;
-				case 3:
-					drawImage = Images.Tiles.QUESTION;
-					break;
-				case 4:
-					drawImage = Images.Tiles.PRESSED;
-					break;
-				case 5:
-					drawImage = Images.Tiles.MINE_FALSE;
-					break;
-				}
-
-				g2d.drawImage(drawImage, column * tileWidth - cameraX, row * tileHeight - cameraY,
-						tileWidth, tileHeight, null);
-			}
-		}
-
-		//Reset the translation
-		g2d.setTransform(transform);
 	}
 
 	public void mousePressed(MouseEvent e)
@@ -385,8 +188,7 @@ public class MineField //TODO Force first pick to be a blank space
 					break;
 				}
 
-				//When a number tile has all mines around it marked, left+right clicking clears all tiles around it
-				//If the tile is a number tile
+				//Check for multi click, press down the tiles
 				if(locations[column][row] >= 1)
 				{
 					//If both the left and right mouse button are clicked
@@ -404,11 +206,13 @@ public class MineField //TODO Force first pick to be a blank space
 							if(board[column - 1][row] == 0) board[column - 1][row] = 4;
 							if(topAvailable)
 							{
-								if(board[column - 1][row - 1] == 0) board[column - 1][row - 1] = 4;
+								if(board[column - 1][row - 1] == 0)
+									board[column - 1][row - 1] = 4;
 							}
 							if(bottomAvailable)
 							{
-								if(board[column - 1][row + 1] == 0) board[column - 1][row + 1] = 4;
+								if(board[column - 1][row + 1] == 0)
+									board[column - 1][row + 1] = 4;
 							}
 						}
 						if(rightAvailable)
@@ -416,11 +220,13 @@ public class MineField //TODO Force first pick to be a blank space
 							if(board[column + 1][row] == 0) board[column + 1][row] = 4;
 							if(topAvailable)
 							{
-								if(board[column + 1][row - 1] == 0) board[column + 1][row - 1] = 4;
+								if(board[column + 1][row - 1] == 0)
+									board[column + 1][row - 1] = 4;
 							}
 							if(bottomAvailable)
 							{
-								if(board[column + 1][row + 1] == 0) board[column + 1][row + 1] = 4;
+								if(board[column + 1][row + 1] == 0)
+									board[column + 1][row + 1] = 4;
 							}
 						}
 						if(topAvailable)
@@ -431,11 +237,6 @@ public class MineField //TODO Force first pick to be a blank space
 						{
 							if(board[column][row + 1] == 0) board[column][row + 1] = 4;
 						}
-
-						//Set the flag so that the click is handled properly
-						multiClickFlag = true;
-						//Set the multiClick coordinates to the tile pushed
-						multiClickCoordinates = new int[] {column, row};
 					}
 				}
 			}
@@ -444,6 +245,30 @@ public class MineField //TODO Force first pick to be a blank space
 
 	public void mouseReleased(MouseEvent e)
 	{
+		//Check for multiclick, click the tiles
+		//If the game has not been won or lost yet
+		if(gameStatus != 2 && gameStatus != 3)
+		{
+			//Ensure the mouse coordinates are within the bounds of the game
+			if(e.getX() >= this.x * GamePanel.SCALE && e.getX() <= (this.x + this.tileWidth * columns) * GamePanel.SCALE && e.getY() >= this.y * GamePanel.SCALE && e.getY() <= (this.y + this.tileHeight * rows) * GamePanel.SCALE)
+			{
+				int column = (e.getX() - ((x - cameraX) * GamePanel.SCALE)) / (tileWidth * GamePanel.SCALE);
+				int row = (e.getY() - ((y - cameraY) * GamePanel.SCALE)) / (tileHeight * GamePanel.SCALE);
+
+				if(locations[column][row] >= 1)
+				{
+					//If both the left and right mouse button are clicked
+					if(SwingUtilities.isLeftMouseButton(e) && SwingUtilities.isRightMouseButton(e))
+					{
+						//Set the flag so that the click is handled properly
+						multiClickFlag = true;
+						//Set the multiClick coordinates to the tile pushed
+						multiClickCoordinates = new int[] {column, row};
+					}
+				}
+			}
+		}
+
 		//Count for how many mines are flagged around the multiClicked tile
 		int multiClickMineCounter = 0;
 
@@ -468,7 +293,8 @@ public class MineField //TODO Force first pick to be a blank space
 					int multiClickRow = multiClickCoordinates[1];
 
 					//If the tile being looped over is within the 8 tiles surrounding the multiClicked tile
-					if(column == multiClickColumn || column == multiClickColumn - 1 || column == multiClickColumn + 1)
+					if(column == multiClickColumn || column == multiClickColumn - 1
+							|| column == multiClickColumn + 1)
 					{
 						if(row == multiClickRow || row == multiClickRow - 1 || row == multiClickRow + 1)
 						{
@@ -478,7 +304,8 @@ public class MineField //TODO Force first pick to be a blank space
 					}
 
 					//If the mineCounter is equal to the number of mines surrounding the multiClickTile
-					if(multiClickMineCounter == locations[multiClickCoordinates[0]][multiClickCoordinates[1]])
+					if(multiClickMineCounter == locations[multiClickCoordinates[0]]
+							[multiClickCoordinates[1]])
 					{
 						clickAround(multiClickCoordinates[0], multiClickCoordinates[1]);
 					}
@@ -596,6 +423,203 @@ public class MineField //TODO Force first pick to be a blank space
 		}
 		if(row - 1 >= 0) click(column, row - 1);
 		if(row + 1 < rows) click(column, row + 1);
+	}
+
+	public void draw(Graphics2D g2d)
+	{
+		g2d.setColor(Color.LIGHT_GRAY);
+		g2d.fillRect(0, 0, GamePanel.WIDTH, GamePanel.HEIGHT);
+
+		//Offset the drawing by a certain amount
+		AffineTransform transform = g2d.getTransform();
+		g2d.translate(x, y);
+
+		//Go through every tile and find out which sprite it corresponds to, and draw it
+		for(int column = 0; column < columns; column++)
+		{
+			for(int row = 0; row < rows; row++)
+			{
+				BufferedImage drawImage = null;
+
+				switch(board[column][row])
+				{
+				case 0:
+					drawImage = Images.Tiles.EMPTY;
+					break;
+				case 1:
+					//If the tile has been pressed, draw a different tile depending on what is underneath
+					switch(locations[column][row])
+					{
+					case 0:
+						drawImage = Images.Tiles.PRESSED;
+						break;
+					case -1:
+						drawImage = Images.Tiles.MINE_TRIGGERED;
+						break;
+					case -2:
+						drawImage = Images.Tiles.MINE_UNTRIGGERED;
+						break;
+					case 1:
+						drawImage = Images.Tiles.Numbers.ONE;
+						break;
+					case 2:
+						drawImage = Images.Tiles.Numbers.TWO;
+						break;
+					case 3:
+						drawImage = Images.Tiles.Numbers.THREE;
+						break;
+					case 4:
+						drawImage = Images.Tiles.Numbers.FOUR;
+						break;
+					case 5:
+						drawImage = Images.Tiles.Numbers.FIVE;
+						break;
+					case 6:
+						drawImage = Images.Tiles.Numbers.SIX;
+						break;
+					case 7:
+						drawImage = Images.Tiles.Numbers.SEVEN;
+						break;
+					case 8:
+						drawImage = Images.Tiles.Numbers.EIGHT;
+						break;
+					}
+					break;
+				case 2:
+					drawImage = Images.Tiles.FLAG;
+					break;
+				case 3:
+					drawImage = Images.Tiles.QUESTION;
+					break;
+				case 4:
+					drawImage = Images.Tiles.PRESSED;
+					break;
+				case 5:
+					drawImage = Images.Tiles.MINE_FALSE;
+					break;
+				}
+
+				g2d.drawImage(drawImage, column * tileWidth - cameraX, row * tileHeight - cameraY,
+						tileWidth, tileHeight, null);
+			}
+		}
+
+		//Reset the translation
+		g2d.setTransform(transform);
+	}
+
+	private void addRandomMine()
+	{
+		//Generate random value using Math.random(), which goes 0-1
+		//Cast to int truncates the value, so 0 has an equal chance
+		//Normally, we add one to the column and row, but because they are indices, we don't
+		int column = (int) (Math.random() * columns);
+		int row = (int) (Math.random() * rows);
+
+		//Ensure location chosen is not a mine
+		if(locations[column][row] != -1)
+		{
+			locations[column][row] = -1;
+
+			//Determine which sides are free
+			//Add one to all surrounding blocks to generate the number clues
+			boolean leftAvailable = column - 1 >= 0;
+			boolean rightAvailable = column + 1 < columns;
+			boolean topAvailable = row - 1 >= 0;
+			boolean bottomAvailable = row + 1 < rows;
+
+			if(leftAvailable)
+			{
+				if(locations[column - 1][row] != -1) locations[column - 1][row]++;
+				if(topAvailable)
+				{
+					if(locations[column - 1][row - 1] != -1) locations[column - 1][row - 1]++;
+				}
+				if(bottomAvailable)
+				{
+					if(locations[column - 1][row + 1] != -1) locations[column - 1][row + 1]++;
+				}
+			}
+			if(rightAvailable)
+			{
+				if(locations[column + 1][row] != -1) locations[column + 1][row]++;
+				if(topAvailable)
+				{
+					if(locations[column + 1][row - 1] != -1) locations[column + 1][row - 1]++;
+				}
+				if(bottomAvailable)
+				{
+					if(locations[column + 1][row + 1] != -1) locations[column + 1][row + 1]++;
+				}
+			}
+			if(topAvailable)
+			{
+				if(locations[column][row - 1] != -1) locations[column][row - 1]++;
+			}
+			if(bottomAvailable)
+			{
+				if(locations[column][row + 1] != -1) locations[column][row + 1]++;
+			}
+		}
+		//If the random coordinates go to a mine, then generate a new mine
+		else addRandomMine();
+	}
+
+	void refreshNumbers()
+	{
+		for(int column = 0; column < columns; column++)
+		{
+			for(int row = 0; row < rows; row++)
+			{
+				if(locations[column][row] != -1) locations[column][row] = 0;
+			}
+		}
+		for(int column = 0; column < columns; column++)
+		{
+			for(int row = 0; row < rows; row++)
+			{
+				if(locations[column][row] == -1)
+				{
+					boolean leftAvailable = column - 1 >= 0;
+					boolean rightAvailable = column + 1 < columns;
+					boolean topAvailable = row - 1 >= 0;
+					boolean bottomAvailable = row + 1 < rows;
+
+					if(leftAvailable)
+					{
+						if(locations[column - 1][row] != -1) locations[column - 1][row]++;
+						if(topAvailable)
+						{
+							if(locations[column - 1][row - 1] != -1) locations[column - 1][row - 1]++;
+						}
+						if(bottomAvailable)
+						{
+							if(locations[column - 1][row + 1] != -1) locations[column - 1][row + 1]++;
+						}
+					}
+					if(rightAvailable)
+					{
+						if(locations[column + 1][row] != -1) locations[column + 1][row]++;
+						if(topAvailable)
+						{
+							if(locations[column + 1][row - 1] != -1) locations[column + 1][row - 1]++;
+						}
+						if(bottomAvailable)
+						{
+							if(locations[column + 1][row + 1] != -1) locations[column + 1][row + 1]++;
+						}
+					}
+					if(topAvailable)
+					{
+						if(locations[column][row - 1] != -1) locations[column][row - 1]++;
+					}
+					if(bottomAvailable)
+					{
+						if(locations[column][row + 1] != -1) locations[column][row + 1]++;
+					}
+				}
+			}
+		}
 	}
 
 	void setValue(int column, int row, int value)
