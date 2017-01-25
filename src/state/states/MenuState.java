@@ -92,21 +92,33 @@ public class MenuState extends State
 		case 0:
 			g2d.drawImage(Images.Tiles.FLAG, (originalX > newX) ? originalX : newX,
 					100, 32, 32, null);
+			if(originalOption == -1)
+				g2d.drawImage(Images.Tiles.FLAG, (originalX < newX) ? originalX : newX,
+						100, 32, 32, null);
 			break;
 
 		case 1:
 			g2d.drawImage(Images.Tiles.Numbers.EIGHT, (originalX > newX) ? originalX : newX,
 					100, 32, 32, null);
+			if(originalOption == -1)
+				g2d.drawImage(Images.Tiles.Numbers.EIGHT, (originalX < newX) ? originalX : newX,
+						100, 32, 32, null);
 			break;
 
 		case 2:
 			g2d.drawImage(Images.Tiles.QUESTION, (originalX > newX) ? originalX : newX,
 					100, 32, 32, null);
+			if(originalOption == -1)
+				g2d.drawImage(Images.Tiles.QUESTION, (originalX < newX) ? originalX : newX,
+						100, 32, 32, null);
 			break;
 
 		case 3:
 			g2d.drawImage(Images.Tiles.MINE_TRIGGERED, (originalX > newX) ? originalX : newX,
 					100, 32, 32, null);
+			if(originalOption == -1)
+				g2d.drawImage(Images.Tiles.MINE_TRIGGERED, (originalX < newX) ? originalX : newX,
+						100, 32, 32, null);
 			break;
 		}
 
@@ -129,11 +141,6 @@ public class MenuState extends State
 
 		case 3:
 			g2d.drawImage(Images.Tiles.MINE_TRIGGERED, (originalX < newX) ? originalX : newX,
-					100, 32, 32, null);
-			break;
-
-		default:
-			g2d.drawImage(Images.Tiles.QUESTION, (originalX < newX) ? originalX : newX,
 					100, 32, 32, null);
 			break;
 		}
