@@ -2,6 +2,7 @@ package components;
 
 import main.GamePanel;
 import utility.Images;
+import utility.Settings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -189,10 +190,12 @@ public class MineField //TODO Force first pick to be a blank space
 				}
 
 				//Check for multi click, press down the tiles
-				if(locations[column][row] >= 1)
+				if(locations[column][row] >= 1 && board[column][row] == 1)
 				{
-					//If both the left and right mouse button are clicked
-					if(SwingUtilities.isLeftMouseButton(e) && SwingUtilities.isRightMouseButton(e))
+					//If a multiclick is initiated
+					if((Settings.DOUBLE_PRESS_MULTI_CLICK && SwingUtilities.isLeftMouseButton(e) &&
+							SwingUtilities.isRightMouseButton(e)) ||
+							!Settings.DOUBLE_PRESS_MULTI_CLICK && SwingUtilities.isLeftMouseButton(e))
 					{
 						//Check all of the surrounding tiles to the tile being pressed
 						//Set the tiles to being pressed
@@ -255,10 +258,12 @@ public class MineField //TODO Force first pick to be a blank space
 				int column = (e.getX() - ((x - cameraX) * GamePanel.SCALE)) / (tileWidth * GamePanel.SCALE);
 				int row = (e.getY() - ((y - cameraY) * GamePanel.SCALE)) / (tileHeight * GamePanel.SCALE);
 
-				if(locations[column][row] >= 1)
+				if(locations[column][row] >= 1 && board[column][row] == 1)
 				{
-					//If both the left and right mouse button are clicked
-					if(SwingUtilities.isLeftMouseButton(e) && SwingUtilities.isRightMouseButton(e))
+					//If a multiclick is initiated
+					if((Settings.DOUBLE_PRESS_MULTI_CLICK && SwingUtilities.isLeftMouseButton(e) &&
+							SwingUtilities.isRightMouseButton(e)) ||
+							!Settings.DOUBLE_PRESS_MULTI_CLICK && SwingUtilities.isLeftMouseButton(e))
 					{
 						//Set the flag so that the click is handled properly
 						multiClickFlag = true;
