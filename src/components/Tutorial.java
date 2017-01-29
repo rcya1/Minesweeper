@@ -81,8 +81,8 @@ public class Tutorial
 			mineField.setValue(2, 4, -1);
 			mineField.refreshNumbers();
 
-			if(stringIndex == 1) mineField.click(1, 3);
-			if(stringIndex == 3) mineField.click(2, 3);
+			if(stringIndex == 1) mineField.click(1, 3, true);
+			if(stringIndex == 3) mineField.click(2, 3, true);
 
 			break;
 		case 2:
@@ -90,10 +90,10 @@ public class Tutorial
 			mineField.setValue(1, 3, 1);
 			mineField.setValue(4, 5, -1);
 
-			mineField.click(1, 3);
+			mineField.click(1, 3, true);
 
 			moveCursorTo(72, 96, 8);
-			if(stringIndex == 1) mineField.click(4, 5);
+			if(stringIndex == 1) mineField.click(4, 5, true);
 			break;
 		case 3:
 			if(mineField == null) mineField = new MineField(9, 9, 10);
@@ -107,13 +107,13 @@ public class Tutorial
 			mineField.setValue(1, 2, 1);
 			mineField.setValue(2, 2, 1);
 
-			mineField.click(1, 1);
-			mineField.click(0, 1);
-			mineField.click(2, 1);
-			mineField.click(0, 2);
-			mineField.click(1, 2);
-			mineField.click(2, 2);
-			mineField.click(2, 0);
+			mineField.click(1, 1, true);
+			mineField.click(0, 1, true);
+			mineField.click(2, 1, true);
+			mineField.click(0, 2, true);
+			mineField.click(1, 2, true);
+			mineField.click(2, 2, true);
+			mineField.click(2, 0, true);
 
 			if(stringIndex == 1) moveCursorTo(12, 16, 4);
 			if(stringIndex == 2)

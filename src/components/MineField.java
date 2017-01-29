@@ -269,6 +269,8 @@ public class MineField //TODO Force first pick to be a blank space
 						multiClickFlag = true;
 						//Set the multiClick coordinates to the tile pushed
 						multiClickCoordinates = new int[] {column, row};
+
+						clicks++;
 					}
 				}
 			}
@@ -289,7 +291,7 @@ public class MineField //TODO Force first pick to be a blank space
 					{
 						//Set the gameStatus back to normal and click the tile
 						if(gameStatus == 1) gameStatus = 0;
-						click(column, row);
+						click(column, row, true);
 					}
 				}
 				else
@@ -349,9 +351,9 @@ public class MineField //TODO Force first pick to be a blank space
 	}
 
 	//Click on a tile
-	void click(int column, int row)
+	void click(int column, int row, boolean countClick)
 	{
-		clicks++;
+		if(countClick) clicks++;
 		//If the tile is not already pressed and it is not flagged
 		if(!(board[column][row] == 1 || board[column][row] == 2 || board[column][row] == 5))
 		{
@@ -403,8 +405,8 @@ public class MineField //TODO Force first pick to be a blank space
 				if(clicks == 1 && locations[column][row] != 0)
 				{
 					createNewBoard(columns, rows, numOfMines);
-					clicks = 1;
-					click(column, row);
+					clicks = 0;
+					click(column, row, true);
 				}
 			}
 		}
@@ -416,18 +418,18 @@ public class MineField //TODO Force first pick to be a blank space
 		//Check to make sure the tiles do not go out of bounds
 		if(column - 1 >= 0)
 		{
-			click(column - 1, row);
-			if(row - 1 >= 0) click(column - 1, row - 1);
-			if(row + 1 < rows) click(column - 1, row + 1);
+			click(column - 1, row, false);
+			if(row - 1 >= 0) click(column - 1, row - 1, false);
+			if(row + 1 < rows) click(column - 1, row + 1, false);
 		}
 		if(column + 1 < columns)
 		{
-			click(column + 1, row);
-			if(row - 1 >= 0) click(column + 1, row - 1);
-			if(row + 1 < rows) click(column + 1, row + 1);
+			click(column + 1, row, false);
+			if(row - 1 >= 0) click(column + 1, row - 1, false);
+			if(row + 1 < rows) click(column + 1, row + 1, false);
 		}
-		if(row - 1 >= 0) click(column, row - 1);
-		if(row + 1 < rows) click(column, row + 1);
+		if(row - 1 >= 0) click(column, row - 1, false);
+		if(row + 1 < rows) click(column, row + 1, false);
 	}
 
 	public void draw(Graphics2D g2d)
