@@ -150,15 +150,6 @@ public class MineField //TODO Force first pick to be a blank space
 				int column = (e.getX() - ((x - cameraX) * GamePanel.SCALE)) / (tileWidth * GamePanel.SCALE);
 				int row = (e.getY() - ((y - cameraY) * GamePanel.SCALE)) / (tileHeight * GamePanel.SCALE);
 
-				if(SwingUtilities.isLeftMouseButton(e))
-				{
-					mouseDragOriginX = e.getX();
-					mouseDragOriginY = e.getY();
-
-					tempCameraX = cameraX;
-					tempCameraY = cameraY;
-				}
-
 				//Action depends on what type of tile the user clicks on
 				switch(board[column][row])
 				{
@@ -243,6 +234,15 @@ public class MineField //TODO Force first pick to be a blank space
 					}
 				}
 			}
+		}
+
+		if(SwingUtilities.isLeftMouseButton(e))
+		{
+			mouseDragOriginX = e.getX();
+			mouseDragOriginY = e.getY();
+
+			tempCameraX = cameraX;
+			tempCameraY = cameraY;
 		}
 	}
 

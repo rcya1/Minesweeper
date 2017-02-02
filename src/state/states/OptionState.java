@@ -226,14 +226,14 @@ public class OptionState extends State
 			int gameHeight;
 
 			if(values[0] < 9) gameWidth = 9 * 16;
-			else if(values[0] * 16 <= Settings.WIDTH_OF_SCREEN / GamePanel.SCALE)
-				gameWidth = values[0] * 16;
+			else if(values[0] * 16 + 40 <= Settings.WIDTH_OF_SCREEN / GamePanel.SCALE)
+				gameWidth = values[0] * 16 + 40;
 			else
 				gameWidth = Math.round(Settings.WIDTH_OF_SCREEN / GamePanel.SCALE);
 
 			if(values[1] < 9) gameHeight = 9 * 16;
-			else if(values[1] * 16 + 26 <= Settings.HEIGHT_OF_SCREEN / GamePanel.SCALE)
-				gameHeight = values[1] * 16 + 26;
+			else if(values[1] * 16 + 40 <= Settings.HEIGHT_OF_SCREEN / GamePanel.SCALE)
+				gameHeight = values[1] * 16 + 40;
 			else
 				gameHeight = Math.round(Settings.HEIGHT_OF_SCREEN / GamePanel.SCALE);
 
