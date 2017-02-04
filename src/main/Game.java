@@ -23,12 +23,10 @@ public class Game
 		frame.setContentPane(new GamePanel(width, height));
 		frame.setPreferredSize(new Dimension(width * GamePanel.SCALE, height * GamePanel.SCALE));
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		frame.pack();
 		frame.setResizable(false);
+		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
-
-		System.out.println(frame.getSize());
 
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 
