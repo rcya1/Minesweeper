@@ -22,6 +22,7 @@ public class Images
 	}
 
 	public static final BufferedImage CURSOR = loadSingleImage("/Cursor.png");
+	public static final BufferedImage CHECKMARK = loadSingleImage("/Checkmark.png");
 
 	public static class TopBar
 	{

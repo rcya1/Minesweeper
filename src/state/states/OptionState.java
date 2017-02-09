@@ -4,6 +4,7 @@ import main.Game;
 import main.GamePanel;
 import state.State;
 import state.StateManager;
+import utility.Images;
 import utility.Settings;
 
 import java.awt.*;
@@ -21,6 +22,7 @@ public class OptionState extends State
 	private int selection;
 
 	private boolean usingTrackpad;
+	private Color checkBoxColor;
 
 	private Color sliderColor;
 	private boolean sliderMouseHover;
@@ -39,6 +41,9 @@ public class OptionState extends State
 		options = new String[]{"Number of Columns", "Number of Rows",
 				"Number of Mines", "Using Trackpad", "Confirm Changes"};
 		selection = 0;
+
+		usingTrackpad = true;
+		checkBoxColor = new Color(0, 0, 0, 0);
 
 		sliderColor = Color.WHITE;
 		sliderMouseHover = false;
@@ -93,7 +98,7 @@ public class OptionState extends State
 			else g2d.drawString(options[i], 8, 15 + 20 * i);
 		}
 
-		if(selection < options.length - 2)
+		if(selection < 3)
 		{
 			g2d.setColor(Color.WHITE);
 			g2d.setFont(new Font("Default", Font.PLAIN, 12));
@@ -110,6 +115,18 @@ public class OptionState extends State
 					Integer.toString(values[selection]), g2d).getWidth();
 			g2d.drawString(Integer.toString(values[selection]),
 					(GamePanel.WIDTH + stringWidth) / 2, 150);
+		}
+		else if(selection == 3)
+		{
+			g2d.setStroke(new BasicStroke(2));
+			g2d.setColor(Color.WHITE);
+			g2d.drawRect(GamePanel.WIDTH / 2 - 10, GamePanel.HEIGHT - 40, 20, 20);
+
+			g2d.setColor(checkBoxColor);
+			g2d.fillRect(GamePanel.WIDTH / 2 - 10, GamePanel.HEIGHT - 40, 20, 20);
+			g2d.setColor(new Color(255, 255, 255));
+			if(usingTrackpad) g2d.drawImage(Images.CHECKMARK, GamePanel.WIDTH / 2 - 8,
+					GamePanel.HEIGHT - 38, null);
 		}
 	}
 
@@ -136,12 +153,14 @@ public class OptionState extends State
 			break;
 
 		case KeyEvent.VK_RIGHT:
-			if(selection != (options.length - 1)) values[selection]++;
+			if(selection < 3) values[selection]++;
+			if(selection == 3) usingTrackpad = !usingTrackpad;
 			if(values[selection] > maxValue) values[selection] = maxValue;
 			break;
 
 		case KeyEvent.VK_LEFT:
-			if(selection != (options.length - 1)) values[selection]--;
+			if(selection < 3) values[selection]--;
+			if(selection == 3) usingTrackpad = !usingTrackpad;
 			if(values[selection] < minValue) values[selection] = minValue;
 			break;
 
@@ -163,12 +182,19 @@ public class OptionState extends State
 		Point mouse = new Point((int) e.getPoint().getX() / GamePanel.SCALE,
 				(int) e.getPoint().getY() / GamePanel.SCALE);
 
-		if(selection < options.length - 2)
+		if(selection < 3)
 		{
 			int xValue = (int) ((double) (values[selection] - minValue) / (maxValue - minValue) * 100);
 			Rectangle sliderRectangle = new Rectangle(5 + xValue - 1, 110, 5, 20);
 
 			sliderMouseHover = sliderRectangle.contains(mouse);
+		}
+		else if(selection == 3)
+		{
+			Rectangle checkBoxRectangle = new Rectangle(GamePanel.WIDTH / 2 - 10,
+					GamePanel.HEIGHT - 40, 20, 20);
+			if(checkBoxRectangle.contains(mouse)) checkBoxColor = new Color(255, 255, 255, 100);
+			else checkBoxColor = new Color(0, 0, 0, 0);
 		}
 
 		for(int i = 0; i < options.length; i++)
@@ -198,6 +224,12 @@ public class OptionState extends State
 		{
 			sliderColor = Color.DARK_GRAY;
 		}
+
+		if(checkBoxColor.equals(new Color(255, 255, 255, 100)))
+		{
+			usingTrackpad = !usingTrackpad;
+		}
+
 		if(optionHoverIndex != -1)
 		{
 			saveChanges();
