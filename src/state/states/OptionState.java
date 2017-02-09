@@ -20,6 +20,8 @@ public class OptionState extends State
 	private String[] options;
 	private int selection;
 
+	private boolean usingTrackpad;
+
 	private Color sliderColor;
 	private boolean sliderMouseHover;
 
@@ -34,7 +36,8 @@ public class OptionState extends State
 	{
 		values = new int[] {Settings.COLUMNS, Settings.ROWS, Settings.NUMBER_OF_MINES};
 
-		options = new String[]{"Number of Columns", "Number of Rows", "Number of Mines", "Confirm Changes"};
+		options = new String[]{"Number of Columns", "Number of Rows",
+				"Number of Mines", "Using Trackpad", "Confirm Changes"};
 		selection = 0;
 
 		sliderColor = Color.WHITE;
@@ -61,6 +64,12 @@ public class OptionState extends State
 			if(values[2] > maxValue) values[2] = maxValue;
 		}
 
+		if(values[2] == Settings.NUMBER_OF_MINES)
+		{
+			values[2] = (values[0] * values[1]) / 8;
+			Settings.NUMBER_OF_MINES = values[2];
+		}
+
 		if(sliderColor != Color.DARK_GRAY)
 		{
 			if(sliderMouseHover)
@@ -84,18 +93,18 @@ public class OptionState extends State
 			else g2d.drawString(options[i], 8, 15 + 20 * i);
 		}
 
-		if(selection != (options.length - 1))
+		if(selection < options.length - 2)
 		{
 			g2d.setColor(Color.WHITE);
 			g2d.setFont(new Font("Default", Font.PLAIN, 12));
 
 			g2d.setStroke(new BasicStroke(2));
-			g2d.drawLine(10, 100, 110, 100);
+			g2d.drawLine(10, 120, 110, 120);
 
 			g2d.setColor(sliderColor);
 			int xValue = (int) ((double) (values[selection] - minValue) /
 					(maxValue - minValue) * 100);
-			g2d.fillRect(5 + xValue - 1, 90, 5, 20);
+			g2d.fillRect(5 + xValue - 1, 110, 5, 20);
 
 			int stringWidth = (int) g2d.getFontMetrics().getStringBounds(
 					Integer.toString(values[selection]), g2d).getWidth();
@@ -154,10 +163,10 @@ public class OptionState extends State
 		Point mouse = new Point((int) e.getPoint().getX() / GamePanel.SCALE,
 				(int) e.getPoint().getY() / GamePanel.SCALE);
 
-		if(selection != options.length - 1)
+		if(selection < options.length - 2)
 		{
 			int xValue = (int) ((double) (values[selection] - minValue) / (maxValue - minValue) * 100);
-			Rectangle sliderRectangle = new Rectangle(5 + xValue - 1, 90, 5, 20);
+			Rectangle sliderRectangle = new Rectangle(5 + xValue - 1, 110, 5, 20);
 
 			sliderMouseHover = sliderRectangle.contains(mouse);
 		}
@@ -205,7 +214,8 @@ public class OptionState extends State
 		if(sliderMouseHover)
 		{
 			sliderColor = Color.DARK_GRAY;
-			values[selection] = (e.getX() / GamePanel.SCALE) - minValue;
+			values[selection] = (int) (((e.getX() / GamePanel.SCALE) - minValue)
+					* (double) maxValue - minValue) / 100;
 			if(values[selection] < minValue) values[selection] = minValue;
 			if(values[selection] > maxValue) values[selection] = maxValue;
 		}
@@ -221,17 +231,18 @@ public class OptionState extends State
 			Settings.COLUMNS = values[0];
 			Settings.ROWS = values[1];
 			Settings.NUMBER_OF_MINES = values[2];
+			Settings.DOUBLE_PRESS_MULTI_CLICK = !usingTrackpad;
 
 			int gameWidth;
 			int gameHeight;
 
-			if(values[0] < 9) gameWidth = 9 * 16;
+			if(values[0] <= 9) gameWidth = 9 * 16;
 			else if(values[0] * 16 + 40 <= Settings.WIDTH_OF_SCREEN / GamePanel.SCALE)
-				gameWidth = values[0] * 16 + 40;
+				gameWidth = values[0] * 16 + 2;
 			else
 				gameWidth = Math.round(Settings.WIDTH_OF_SCREEN / GamePanel.SCALE);
 
-			if(values[1] < 9) gameHeight = 9 * 16;
+			if(values[1] <= 9) gameHeight = 9 * 16 + 40;
 			else if(values[1] * 16 + 40 <= Settings.HEIGHT_OF_SCREEN / GamePanel.SCALE)
 				gameHeight = values[1] * 16 + 40;
 			else
