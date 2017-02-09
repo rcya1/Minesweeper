@@ -45,35 +45,33 @@ public class MineField //TODO Force first pick to be a blank space
 	private int mouseDragOriginX;
 	private int mouseDragOriginY;
 
-	public MineField(int columns, int rows, int numOfMines)
+	public MineField()
 	{
-		createNewBoard(columns, rows, numOfMines);
-
 		tileWidth = 16;
 		tileHeight = 16;
 
 		x = 0;
 		y = 0;
+
+		reset();
 	}
 
-	void createNewBoard(int columns, int rows, int numOfMines)
+	void reset()
 	{
 		tileWidth = 16;
 		tileHeight = 16;
 
-		this.columns = columns;
-		this.rows = rows;
+		this.columns = Settings.COLUMNS;
+		this.rows = Settings.ROWS;
 
 		locations = new int[columns][rows];
 		board = new int[columns][rows];
 
-		this.numOfMines = numOfMines;
+		this.numOfMines = Settings.NUMBER_OF_MINES;
 
 		clicks = 0;
 
 		gameStatus = -1;
-
-		for(int i = 0; i < numOfMines; i++) addRandomMine();
 
 		cameraModeX = columns * tileWidth > GamePanel.WIDTH;
 		cameraModeY = rows * tileHeight > GamePanel.HEIGHT;
@@ -85,17 +83,21 @@ public class MineField //TODO Force first pick to be a blank space
 		tempCameraY = 0;
 	}
 
+	void createNewBoard(int zeroColumn, int zeroRow)
+	{
+		reset();
+		for(int i = 0; i < numOfMines; i++) addRandomMine(zeroColumn, zeroRow);
+	}
+
 	public void update()
 	{
-		//Set to false when the win conditions are not met
 		boolean winFlag = true;
 
-		//Iterate through all tiles
+		//Check if win conditions are met
 		for(int column = 0; column < columns; column++)
 		{
 			for(int row = 0; row < rows; row++)
 			{
-				//Check if win
 				//Check if the tile is open
 				if(board[column][row] != 1)
 				{
@@ -136,19 +138,25 @@ public class MineField //TODO Force first pick to be a blank space
 					e.getY() >= this.y * GamePanel.SCALE &&
 					e.getY() <= (this.y + this.tileHeight * rows) * GamePanel.SCALE)
 			{
-				//Get the mouseX, subtract the offset, and divide by the tile dimensions to get
-				//the row/column of where an object is
-				//tileWidth is multiplied by scale, since getX is in unscaled pixels, while the entire thing is
-				//scaled up
-
+				//Start the game/timer
 				if(gameStatus == -1)
 				{
 					if(SwingUtilities.isRightMouseButton(e) || SwingUtilities.isLeftMouseButton(e))
 						gameStatus = 0;
 				}
 
+				//Get the mouseX, subtract the offset, and divide by the tile dimensions to get
+				//the row/column of where an object is
+				//tileWidth is multiplied by scale, since getX is in unscaled pixels, while the entire thing is
+				//scaled up
 				int column = (e.getX() - ((x - cameraX) * GamePanel.SCALE)) / (tileWidth * GamePanel.SCALE);
 				int row = (e.getY() - ((y - cameraY) * GamePanel.SCALE)) / (tileHeight * GamePanel.SCALE);
+
+				//If this is the first reveal, generate the board
+				if(clicks == 0)
+				{
+					createNewBoard(column, row);
+				}
 
 				//Action depends on what type of tile the user clicks on
 				switch(board[column][row])
@@ -180,7 +188,7 @@ public class MineField //TODO Force first pick to be a blank space
 					break;
 				}
 
-				//Check for multi click, press down the tiles
+				//Check for multi reveal, reveal down the tiles
 				if(locations[column][row] >= 1 && board[column][row] == 1)
 				{
 					//If a multiclick is initiated
@@ -236,6 +244,7 @@ public class MineField //TODO Force first pick to be a blank space
 			}
 		}
 
+		//Activate camera movement
 		if(SwingUtilities.isLeftMouseButton(e))
 		{
 			mouseDragOriginX = e.getX();
@@ -248,13 +257,14 @@ public class MineField //TODO Force first pick to be a blank space
 
 	public void mouseReleased(MouseEvent e)
 	{
-		//Check for multiclick, click the tiles
+		//Check for multiclick, reveal the tiles
 		//If the game has not been won or lost yet
 		if(gameStatus != 2 && gameStatus != 3)
 		{
 			//Ensure the mouse coordinates are within the bounds of the game
 			if(e.getX() >= this.x * GamePanel.SCALE && e.getX() <= (this.x + this.tileWidth * columns) * GamePanel.SCALE && e.getY() >= this.y * GamePanel.SCALE && e.getY() <= (this.y + this.tileHeight * rows) * GamePanel.SCALE)
 			{
+				//Calculate column and row of the tile pressed on
 				int column = (e.getX() - ((x - cameraX) * GamePanel.SCALE)) / (tileWidth * GamePanel.SCALE);
 				int row = (e.getY() - ((y - cameraY) * GamePanel.SCALE)) / (tileHeight * GamePanel.SCALE);
 
@@ -265,7 +275,7 @@ public class MineField //TODO Force first pick to be a blank space
 							SwingUtilities.isRightMouseButton(e)) ||
 							!Settings.DOUBLE_PRESS_MULTI_CLICK && SwingUtilities.isLeftMouseButton(e))
 					{
-						//Set the flag so that the click is handled properly
+						//Set the flag so that the multiple clicks are handled properly
 						multiClickFlag = true;
 						//Set the multiClick coordinates to the tile pushed
 						multiClickCoordinates = new int[] {column, row};
@@ -289,9 +299,9 @@ public class MineField //TODO Force first pick to be a blank space
 				{
 					if(board[column][row] == 4 && SwingUtilities.isLeftMouseButton(e))
 					{
-						//Set the gameStatus back to normal and click the tile
+						//Set the gameStatus back to normal and reveal the tile
 						if(gameStatus == 1) gameStatus = 0;
-						click(column, row, true);
+						reveal(column, row, true);
 					}
 				}
 				else
@@ -329,14 +339,16 @@ public class MineField //TODO Force first pick to be a blank space
 
 	public void mouseDragged(MouseEvent e)
 	{
+		//Move around the camera
 		if(SwingUtilities.isLeftMouseButton(e))
 		{
-			if(cameraModeX) cameraX = tempCameraX - (e.getX() - mouseDragOriginX) / 2;
-			if(cameraModeY) cameraY = tempCameraY - (e.getY() - mouseDragOriginY) / 2;
+			//Change the camera depending on the origin of the reveal, and then divide by scale to scale down movement
+			if(cameraModeX) cameraX = tempCameraX - (e.getX() - mouseDragOriginX) / GamePanel.SCALE;
+			if(cameraModeY) cameraY = tempCameraY - (e.getY() - mouseDragOriginY) / GamePanel.SCALE;
 
+			//Limit the camera movement
 			if(cameraX < 0) cameraX = 0;
 			if(cameraY < 0) cameraY = 0;
-
 			if(cameraModeX)
 			{
 				if(cameraX + GamePanel.WIDTH > columns * tileWidth)
@@ -350,17 +362,19 @@ public class MineField //TODO Force first pick to be a blank space
 		}
 	}
 
-	//Click on a tile
-	void click(int column, int row, boolean countClick)
+	//Reveal a tile
+	void reveal(int column, int row, boolean countClick)
 	{
+		//If this reveal was not part of a multiclick, then the reveal will be counted
 		if(countClick) clicks++;
+
 		//If the tile is not already pressed and it is not flagged
 		if(!(board[column][row] == 1 || board[column][row] == 2 || board[column][row] == 5))
 		{
 			//Set the tile to pressed
 			board[column][row] = 1;
 
-			//If tile is empty, click all adjacent tiles
+			//If tile is empty, reveal all adjacent tiles
 			if(locations[column][row] == 0)
 			{
 				clickAround(column, row);
@@ -372,24 +386,18 @@ public class MineField //TODO Force first pick to be a blank space
 				//Set gameStatus to lost state
 				gameStatus = 3;
 
-				//Loop through all tiles, if a tile is flagged and not a mine, set it to a false flag
 				for(int columnI = 0; columnI < columns; columnI++)
 				{
 					for(int rowI = 0; rowI < rows; rowI++)
 					{
+						//If a tile is flagged and not a mine, set it to a false flag
 						if(board[columnI][rowI] == 2 && locations[columnI][rowI] != -1)
 						{
 							board[columnI][rowI] = 5;
 						}
-					}
-				}
 
-				//Loop through all tiles, find mines, and activate them, not click them
-				for(int columnI = 0; columnI < columns; columnI++)
-				{
-					for(int rowI = 0; rowI < rows; rowI++)
-					{
-						if(locations[columnI][rowI] == -1 && board[columnI][rowI] != 2 &&
+						//Find mines, and reveal them, but not activate them
+						else if(locations[columnI][rowI] == -1 && board[columnI][rowI] != 2 &&
 								//If at least one of the coordinates does not match,
 								//then the mine is not the one initially clicked on
 								(column != columnI || row != rowI))
@@ -401,35 +409,28 @@ public class MineField //TODO Force first pick to be a blank space
 						}
 					}
 				}
-
-				if(clicks == 1 && locations[column][row] != 0)
-				{
-					createNewBoard(columns, rows, numOfMines);
-					clicks = 0;
-					click(column, row, true);
-				}
 			}
 		}
 	}
 
-	//Click all tiles around a certain tile, does not click tile given
+	//Click all tiles around a certain tile, does not reveal tile given
 	private void clickAround(int column, int row)
 	{
 		//Check to make sure the tiles do not go out of bounds
 		if(column - 1 >= 0)
 		{
-			click(column - 1, row, false);
-			if(row - 1 >= 0) click(column - 1, row - 1, false);
-			if(row + 1 < rows) click(column - 1, row + 1, false);
+			reveal(column - 1, row, false);
+			if(row - 1 >= 0) reveal(column - 1, row - 1, false);
+			if(row + 1 < rows) reveal(column - 1, row + 1, false);
 		}
 		if(column + 1 < columns)
 		{
-			click(column + 1, row, false);
-			if(row - 1 >= 0) click(column + 1, row - 1, false);
-			if(row + 1 < rows) click(column + 1, row + 1, false);
+			reveal(column + 1, row, false);
+			if(row - 1 >= 0) reveal(column + 1, row - 1, false);
+			if(row + 1 < rows) reveal(column + 1, row + 1, false);
 		}
-		if(row - 1 >= 0) click(column, row - 1, false);
-		if(row + 1 < rows) click(column, row + 1, false);
+		if(row - 1 >= 0) reveal(column, row - 1, false);
+		if(row + 1 < rows) reveal(column, row + 1, false);
 	}
 
 	public void draw(Graphics2D g2d)
@@ -515,7 +516,8 @@ public class MineField //TODO Force first pick to be a blank space
 		g2d.setTransform(transform);
 	}
 
-	private void addRandomMine()
+	//Zero Coordinates are for the initial click, and mines will not spawn around the coordinates
+	private void addRandomMine(int zeroColumn, int zeroRow)
 	{
 		//Generate random value using Math.random(), which goes 0-1
 		//Cast to int truncates the value, so 0 has an equal chance
@@ -523,57 +525,76 @@ public class MineField //TODO Force first pick to be a blank space
 		int column = (int) (Math.random() * columns);
 		int row = (int) (Math.random() * rows);
 
-		//Ensure location chosen is not a mine
-		if(locations[column][row] != -1)
+		//Flag for whether the coordinates generated are or are not part of the
+		boolean keepGoing = true;
+
+		//If the generated mine is near the first click, then generate a new mine
+		if(column + 1 == zeroColumn || column == zeroColumn || column - 1 == zeroColumn)
 		{
-			locations[column][row] = -1;
-
-			//Determine which sides are free
-			//Add one to all surrounding blocks to generate the number clues
-			boolean leftAvailable = column - 1 >= 0;
-			boolean rightAvailable = column + 1 < columns;
-			boolean topAvailable = row - 1 >= 0;
-			boolean bottomAvailable = row + 1 < rows;
-
-			if(leftAvailable)
+			if(row + 1 == zeroRow || row == zeroRow || row - 1 == zeroRow)
 			{
-				if(locations[column - 1][row] != -1) locations[column - 1][row]++;
-				if(topAvailable)
-				{
-					if(locations[column - 1][row - 1] != -1) locations[column - 1][row - 1]++;
-				}
-				if(bottomAvailable)
-				{
-					if(locations[column - 1][row + 1] != -1) locations[column - 1][row + 1]++;
-				}
-			}
-			if(rightAvailable)
-			{
-				if(locations[column + 1][row] != -1) locations[column + 1][row]++;
-				if(topAvailable)
-				{
-					if(locations[column + 1][row - 1] != -1) locations[column + 1][row - 1]++;
-				}
-				if(bottomAvailable)
-				{
-					if(locations[column + 1][row + 1] != -1) locations[column + 1][row + 1]++;
-				}
-			}
-			if(topAvailable)
-			{
-				if(locations[column][row - 1] != -1) locations[column][row - 1]++;
-			}
-			if(bottomAvailable)
-			{
-				if(locations[column][row + 1] != -1) locations[column][row + 1]++;
+				addRandomMine(zeroColumn, zeroRow);
+				keepGoing = false;
 			}
 		}
-		//If the random coordinates go to a mine, then generate a new mine
-		else addRandomMine();
+
+		//If this iteration of the random mine is not near the click, then continue with placing the mine
+		if(keepGoing)
+		{
+			//Ensure location chosen is not a mine
+			if(locations[column][row] != -1)
+			{
+				locations[column][row] = -1;
+
+				//Determine which sides are free
+				//Add one to all surrounding blocks to generate the number clues
+				boolean leftAvailable = column - 1 >= 0;
+				boolean rightAvailable = column + 1 < columns;
+				boolean topAvailable = row - 1 >= 0;
+				boolean bottomAvailable = row + 1 < rows;
+
+				if(leftAvailable)
+				{
+					if(locations[column - 1][row] != -1) locations[column - 1][row]++;
+					if(topAvailable)
+					{
+						if(locations[column - 1][row - 1] != -1) locations[column - 1][row - 1]++;
+					}
+					if(bottomAvailable)
+					{
+						if(locations[column - 1][row + 1] != -1) locations[column - 1][row + 1]++;
+					}
+				}
+				if(rightAvailable)
+				{
+					if(locations[column + 1][row] != -1) locations[column + 1][row]++;
+					if(topAvailable)
+					{
+						if(locations[column + 1][row - 1] != -1) locations[column + 1][row - 1]++;
+					}
+					if(bottomAvailable)
+					{
+						if(locations[column + 1][row + 1] != -1) locations[column + 1][row + 1]++;
+					}
+				}
+				if(topAvailable)
+				{
+					if(locations[column][row - 1] != -1) locations[column][row - 1]++;
+				}
+				if(bottomAvailable)
+				{
+					if(locations[column][row + 1] != -1) locations[column][row + 1]++;
+				}
+			}
+			//If the random coordinates go to a mine, then generate a new mine
+			else addRandomMine(zeroColumn, zeroRow);
+		}
 	}
 
+	//Refresh all of the mine numbers
 	void refreshNumbers()
 	{
+		//Set all nonmines back to 0
 		for(int column = 0; column < columns; column++)
 		{
 			for(int row = 0; row < rows; row++)
@@ -581,12 +602,16 @@ public class MineField //TODO Force first pick to be a blank space
 				if(locations[column][row] != -1) locations[column][row] = 0;
 			}
 		}
+
+		//Iterate through all tiles
 		for(int column = 0; column < columns; column++)
 		{
 			for(int row = 0; row < rows; row++)
 			{
 				if(locations[column][row] == -1)
 				{
+					//Determine which sides are free
+					//Add one to all surrounding blocks to generate the number clues
 					boolean leftAvailable = column - 1 >= 0;
 					boolean rightAvailable = column + 1 < columns;
 					boolean topAvailable = row - 1 >= 0;

@@ -23,7 +23,7 @@ public class PlayState extends State
 
 	public void init()
 	{
-		mineField = new MineField(Settings.COLUMNS, Settings.ROWS, Settings.NUMBER_OF_MINES);
+		mineField = new MineField();
 		mineField.setCoordinates(0, 26);
 
 		topBar = new TopBar(mineField);

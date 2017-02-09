@@ -40,12 +40,12 @@ public class Tutorial
 				{
 					"Welcome to the\nMinesweeper Tutorial!",
 						"Here you will learn\nthe basics of Minesweeper.",
-						"To exit this tutorial,\npress escape at any moment.",
+						"To exit this tutorial,\nreveal escape at any moment.",
 						"Let's Begin!"
 				},
 				{
 					"The point of Minesweeper is\nto clear all of the squares.",
-						"As you can see, when\nyou click on a square,",
+						"As you can see, when\nyou reveal on a square,",
 						"the square displays\nsome information.",
 						"To win, clear all\nof the squares!"
 				},
@@ -58,7 +58,7 @@ public class Tutorial
 					"To find mines, use\nthe numbers as clues!",
 						"The number 2 means there\nare 2 mines around this tile.",
 						"Therefore, these\nhave to be mines.",
-						"You can mark mines,\nso you don't click on them."
+						"You can mark mines,\nso you don't reveal on them."
 				},
 				{
 					"Using logic, you can\nbeat Minesweeper!",
@@ -70,10 +70,18 @@ public class Tutorial
 		switch(slide)
 		{
 		case 0:
-			if(mineField == null) mineField = new MineField(9, 9, 10);
+			if(mineField == null)
+			{
+				mineField = new MineField();
+				mineField.createNewBoard(-10, -10);
+			}
 			break;
 		case 1:
-			if(mineField == null) mineField = new MineField(9, 9, 0);
+			if(mineField == null)
+			{
+				mineField = new MineField();
+				mineField.createNewBoard(-10, -10);
+			}
 			if(stringIndex <= 2) moveCursorTo(22, 64, 8);
 			else moveCursorTo(38, 64, 8);
 
@@ -81,22 +89,30 @@ public class Tutorial
 			mineField.setValue(2, 4, -1);
 			mineField.refreshNumbers();
 
-			if(stringIndex == 1) mineField.click(1, 3, true);
-			if(stringIndex == 3) mineField.click(2, 3, true);
+			if(stringIndex == 1) mineField.reveal(1, 3, true);
+			if(stringIndex == 3) mineField.reveal(2, 3, true);
 
 			break;
 		case 2:
-			if(mineField == null) mineField = new MineField(9, 9, 10);
+			if(mineField == null)
+			{
+				mineField = new MineField();
+				mineField.createNewBoard(-10, -10);
+			}
 			mineField.setValue(1, 3, 1);
 			mineField.setValue(4, 5, -1);
 
-			mineField.click(1, 3, true);
+			mineField.reveal(1, 3, true);
 
 			moveCursorTo(72, 96, 8);
-			if(stringIndex == 1) mineField.click(4, 5, true);
+			if(stringIndex == 1) mineField.reveal(4, 5, true);
 			break;
 		case 3:
-			if(mineField == null) mineField = new MineField(9, 9, 10);
+			if(mineField == null)
+			{
+				mineField = new MineField();
+				mineField.createNewBoard(-10, -10);
+			}
 			mineField.setValue(1, 1, 2);
 			mineField.setValue(0, 0, -1);
 			mineField.setValue(1, 0, -1);
@@ -107,13 +123,13 @@ public class Tutorial
 			mineField.setValue(1, 2, 1);
 			mineField.setValue(2, 2, 1);
 
-			mineField.click(1, 1, true);
-			mineField.click(0, 1, true);
-			mineField.click(2, 1, true);
-			mineField.click(0, 2, true);
-			mineField.click(1, 2, true);
-			mineField.click(2, 2, true);
-			mineField.click(2, 0, true);
+			mineField.reveal(1, 1, true);
+			mineField.reveal(0, 1, true);
+			mineField.reveal(2, 1, true);
+			mineField.reveal(0, 2, true);
+			mineField.reveal(1, 2, true);
+			mineField.reveal(2, 2, true);
+			mineField.reveal(2, 0, true);
 
 			if(stringIndex == 1) moveCursorTo(12, 16, 4);
 			if(stringIndex == 2)
@@ -128,10 +144,18 @@ public class Tutorial
 			}
 			break;
 		case 4:
-			if(mineField == null) mineField = new MineField(9, 9, 10);
+			if(mineField == null)
+			{
+				mineField = new MineField();
+				mineField.createNewBoard(-10, -10);
+			}
 			break;
 		case 5:
-			if(mineField == null) mineField = new MineField(9, 9, 10);
+			if(mineField == null)
+			{
+				mineField = new MineField();
+				mineField.createNewBoard(-10, -10);
+			}
 			break;
 		}
 
