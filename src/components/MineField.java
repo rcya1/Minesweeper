@@ -196,49 +196,17 @@ public class MineField //TODO Force first pick to be a blank space
 							SwingUtilities.isRightMouseButton(e)) ||
 							!Settings.DOUBLE_PRESS_MULTI_CLICK && SwingUtilities.isLeftMouseButton(e))
 					{
-						//Check all of the surrounding tiles to the tile being pressed
-						//Set the tiles to being pressed
-						boolean leftAvailable = column - 1 >= 0;
-						boolean rightAvailable = column + 1 < columns;
-						boolean topAvailable = row - 1 >= 0;
-						boolean bottomAvailable = row + 1 < rows;
-
-						if(leftAvailable)
+						performActionAround(column, row, board, new AroundAction()
 						{
-							if(board[column - 1][row] == 0) board[column - 1][row] = 4;
-							if(topAvailable)
+							public void action(int[][] targetArray, int column, int row)
 							{
-								if(board[column - 1][row - 1] == 0)
-									board[column - 1][row - 1] = 4;
+								targetArray[column][row] = 4;
 							}
-							if(bottomAvailable)
+							public boolean check(int tile)
 							{
-								if(board[column - 1][row + 1] == 0)
-									board[column - 1][row + 1] = 4;
+								return tile == 0;
 							}
-						}
-						if(rightAvailable)
-						{
-							if(board[column + 1][row] == 0) board[column + 1][row] = 4;
-							if(topAvailable)
-							{
-								if(board[column + 1][row - 1] == 0)
-									board[column + 1][row - 1] = 4;
-							}
-							if(bottomAvailable)
-							{
-								if(board[column + 1][row + 1] == 0)
-									board[column + 1][row + 1] = 4;
-							}
-						}
-						if(topAvailable)
-						{
-							if(board[column][row - 1] == 0) board[column][row - 1] = 4;
-						}
-						if(bottomAvailable)
-						{
-							if(board[column][row + 1] == 0) board[column][row + 1] = 4;
-						}
+						});
 					}
 				}
 			}
@@ -365,7 +333,7 @@ public class MineField //TODO Force first pick to be a blank space
 	//Reveal a tile
 	void reveal(int column, int row, boolean countClick)
 	{
-		//If this reveal was not part of a multiclick, then the reveal will be counted
+		//Check if this click should be counted
 		if(countClick) clicks++;
 
 		//If the tile is not already pressed and it is not flagged
@@ -416,21 +384,18 @@ public class MineField //TODO Force first pick to be a blank space
 	//Click all tiles around a certain tile, does not reveal tile given
 	private void clickAround(int column, int row)
 	{
-		//Check to make sure the tiles do not go out of bounds
-		if(column - 1 >= 0)
+		//Reveal all tiles around it, no matter what they are
+		performActionAround(column, row, board, new AroundAction()
 		{
-			reveal(column - 1, row, false);
-			if(row - 1 >= 0) reveal(column - 1, row - 1, false);
-			if(row + 1 < rows) reveal(column - 1, row + 1, false);
-		}
-		if(column + 1 < columns)
-		{
-			reveal(column + 1, row, false);
-			if(row - 1 >= 0) reveal(column + 1, row - 1, false);
-			if(row + 1 < rows) reveal(column + 1, row + 1, false);
-		}
-		if(row - 1 >= 0) reveal(column, row - 1, false);
-		if(row + 1 < rows) reveal(column, row + 1, false);
+			public void action(int[][] targetArray, int column, int row)
+			{
+				reveal(column, row, false);
+			}
+			public boolean check(int tile)
+			{
+				return true;
+			}
+		});
 	}
 
 	public void draw(Graphics2D g2d)
@@ -544,47 +509,20 @@ public class MineField //TODO Force first pick to be a blank space
 			//Ensure location chosen is not a mine
 			if(locations[column][row] != -1)
 			{
+				//Set it to a mine, and increment all numbers around it
 				locations[column][row] = -1;
 
-				//Determine which sides are free
-				//Add one to all surrounding blocks to generate the number clues
-				boolean leftAvailable = column - 1 >= 0;
-				boolean rightAvailable = column + 1 < columns;
-				boolean topAvailable = row - 1 >= 0;
-				boolean bottomAvailable = row + 1 < rows;
-
-				if(leftAvailable)
+				performActionAround(column, row, locations, new AroundAction()
 				{
-					if(locations[column - 1][row] != -1) locations[column - 1][row]++;
-					if(topAvailable)
+					public void action(int[][] targetArray, int column, int row)
 					{
-						if(locations[column - 1][row - 1] != -1) locations[column - 1][row - 1]++;
+						targetArray[column][row]++;
 					}
-					if(bottomAvailable)
+					public boolean check(int tile)
 					{
-						if(locations[column - 1][row + 1] != -1) locations[column - 1][row + 1]++;
+						return tile != -1;
 					}
-				}
-				if(rightAvailable)
-				{
-					if(locations[column + 1][row] != -1) locations[column + 1][row]++;
-					if(topAvailable)
-					{
-						if(locations[column + 1][row - 1] != -1) locations[column + 1][row - 1]++;
-					}
-					if(bottomAvailable)
-					{
-						if(locations[column + 1][row + 1] != -1) locations[column + 1][row + 1]++;
-					}
-				}
-				if(topAvailable)
-				{
-					if(locations[column][row - 1] != -1) locations[column][row - 1]++;
-				}
-				if(bottomAvailable)
-				{
-					if(locations[column][row + 1] != -1) locations[column][row + 1]++;
-				}
+				});
 			}
 			//If the random coordinates go to a mine, then generate a new mine
 			else addRandomMine(zeroColumn, zeroRow);
@@ -603,54 +541,77 @@ public class MineField //TODO Force first pick to be a blank space
 			}
 		}
 
-		//Iterate through all tiles
+		//Go through all tiles, and if it is a mine, increment the numbers surrounding it
 		for(int column = 0; column < columns; column++)
 		{
 			for(int row = 0; row < rows; row++)
 			{
 				if(locations[column][row] == -1)
 				{
-					//Determine which sides are free
-					//Add one to all surrounding blocks to generate the number clues
-					boolean leftAvailable = column - 1 >= 0;
-					boolean rightAvailable = column + 1 < columns;
-					boolean topAvailable = row - 1 >= 0;
-					boolean bottomAvailable = row + 1 < rows;
-
-					if(leftAvailable)
+					performActionAround(column, row, locations, new AroundAction()
 					{
-						if(locations[column - 1][row] != -1) locations[column - 1][row]++;
-						if(topAvailable)
+						public void action(int[][] targetArray, int column, int row)
 						{
-							if(locations[column - 1][row - 1] != -1) locations[column - 1][row - 1]++;
+							targetArray[column][row]++;
 						}
-						if(bottomAvailable)
+						public boolean check(int tile)
 						{
-							if(locations[column - 1][row + 1] != -1) locations[column - 1][row + 1]++;
+							return tile != -1;
 						}
-					}
-					if(rightAvailable)
-					{
-						if(locations[column + 1][row] != -1) locations[column + 1][row]++;
-						if(topAvailable)
-						{
-							if(locations[column + 1][row - 1] != -1) locations[column + 1][row - 1]++;
-						}
-						if(bottomAvailable)
-						{
-							if(locations[column + 1][row + 1] != -1) locations[column + 1][row + 1]++;
-						}
-					}
-					if(topAvailable)
-					{
-						if(locations[column][row - 1] != -1) locations[column][row - 1]++;
-					}
-					if(bottomAvailable)
-					{
-						if(locations[column][row + 1] != -1) locations[column][row + 1]++;
-					}
+					});
 				}
 			}
+		}
+	}
+
+	private void performActionAround(int column, int row, int[][] targetArray,
+			AroundAction aroundAction)
+	{
+		//Ensure the tiles are in bounds, and then perform the given action on them
+		boolean leftAvailable = column - 1 >= 0;
+		boolean rightAvailable = column + 1 < columns;
+		boolean topAvailable = row - 1 >= 0;
+		boolean bottomAvailable = row + 1 < rows;
+
+		if(leftAvailable)
+		{
+			if(aroundAction.check(targetArray[column - 1][row]))
+				aroundAction.action(targetArray, column - 1, row);
+			if(topAvailable)
+			{
+				if(aroundAction.check(targetArray[column - 1][row - 1]))
+					aroundAction.action(targetArray, column - 1, row - 1);
+			}
+			if(bottomAvailable)
+			{
+				if(aroundAction.check(targetArray[column - 1][row + 1]))
+					aroundAction.action(targetArray, column - 1, row + 1);
+			}
+		}
+		if(rightAvailable)
+		{
+			if(aroundAction.check(targetArray[column + 1][row]))
+				aroundAction.action(targetArray, column + 1, row);
+			if(topAvailable)
+			{
+				if(aroundAction.check(targetArray[column + 1][row - 1]))
+					aroundAction.action(targetArray, column + 1, row - 1);
+			}
+			if(bottomAvailable)
+			{
+				if(aroundAction.check(targetArray[column + 1][row + 1]))
+					aroundAction.action(targetArray, column + 1, row + 1);
+			}
+		}
+		if(topAvailable)
+		{
+			if(aroundAction.check(targetArray[column][row - 1]))
+				aroundAction.action(targetArray, column, row - 1);
+		}
+		if(bottomAvailable)
+		{
+			if(aroundAction.check(targetArray[column][row + 1]))
+				aroundAction.action(targetArray, column, row + 1);
 		}
 	}
 
@@ -679,4 +640,11 @@ public class MineField //TODO Force first pick to be a blank space
 	{
 		return numOfMines;
 	}
+}
+
+//Anonymous Class for an action that is performed around another
+interface AroundAction
+{
+	boolean check(int tile); //Check if action should be performed
+	void action(int[][] targetArray, int column, int row); //Action to be performed
 }
