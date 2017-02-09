@@ -90,7 +90,7 @@ public class TopBar
 			if(faceExpression == 4)
 			{
 				faceExpression = 0;
-				mineField.reset();
+				mineField.reset(Settings.COLUMNS, Settings.ROWS, Settings.NUMBER_OF_MINES);
 				resetTimer();
 			}
 		}
@@ -100,7 +100,7 @@ public class TopBar
 	{
 		if(e == KeyEvent.VK_R)
 		{
-			mineField.reset();
+			mineField.reset(Settings.COLUMNS, Settings.ROWS, Settings.NUMBER_OF_MINES);
 			resetTimer();
 		}
 	}

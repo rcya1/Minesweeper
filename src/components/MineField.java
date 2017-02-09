@@ -53,21 +53,21 @@ public class MineField //TODO Force first pick to be a blank space
 		x = 0;
 		y = 0;
 
-		reset();
+		reset(Settings.COLUMNS, Settings.ROWS, Settings.NUMBER_OF_MINES);
 	}
 
-	void reset()
+	void reset(int columns, int rows, int numOfMines)
 	{
 		tileWidth = 16;
 		tileHeight = 16;
 
-		this.columns = Settings.COLUMNS;
-		this.rows = Settings.ROWS;
+		this.columns = columns;
+		this.rows = rows;
 
 		locations = new int[columns][rows];
 		board = new int[columns][rows];
 
-		this.numOfMines = Settings.NUMBER_OF_MINES;
+		this.numOfMines = numOfMines;
 
 		clicks = 0;
 
@@ -85,8 +85,14 @@ public class MineField //TODO Force first pick to be a blank space
 
 	void createNewBoard(int zeroColumn, int zeroRow)
 	{
-		reset();
+		reset(Settings.COLUMNS, Settings.ROWS, Settings.NUMBER_OF_MINES);
 		for(int i = 0; i < numOfMines; i++) addRandomMine(zeroColumn, zeroRow);
+	}
+
+	void createStandardBoard(int columns, int rows, int numOfMines)
+	{
+		reset(columns, rows, numOfMines);
+		for(int i = 0; i < numOfMines; i++) addRandomMine(-10, -10);
 	}
 
 	public void update()

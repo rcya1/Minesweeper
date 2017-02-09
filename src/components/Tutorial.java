@@ -73,14 +73,14 @@ public class Tutorial
 			if(mineField == null)
 			{
 				mineField = new MineField();
-				mineField.createNewBoard(-10, -10);
+				mineField.createStandardBoard(9, 9, 10);
 			}
 			break;
 		case 1:
 			if(mineField == null)
 			{
 				mineField = new MineField();
-				mineField.createNewBoard(-10, -10);
+				mineField.createStandardBoard(9, 9, 10);
 			}
 			if(stringIndex <= 2) moveCursorTo(22, 64, 8);
 			else moveCursorTo(38, 64, 8);
@@ -97,7 +97,7 @@ public class Tutorial
 			if(mineField == null)
 			{
 				mineField = new MineField();
-				mineField.createNewBoard(-10, -10);
+				mineField.createStandardBoard(9, 9, 10);
 			}
 			mineField.setValue(1, 3, 1);
 			mineField.setValue(4, 5, -1);
@@ -111,7 +111,7 @@ public class Tutorial
 			if(mineField == null)
 			{
 				mineField = new MineField();
-				mineField.createNewBoard(-10, -10);
+				mineField.createStandardBoard(9, 9, 10);
 			}
 			mineField.setValue(1, 1, 2);
 			mineField.setValue(0, 0, -1);
@@ -147,14 +147,14 @@ public class Tutorial
 			if(mineField == null)
 			{
 				mineField = new MineField();
-				mineField.createNewBoard(-10, -10);
+				mineField.createStandardBoard(9, 9, 10);
 			}
 			break;
 		case 5:
 			if(mineField == null)
 			{
 				mineField = new MineField();
-				mineField.createNewBoard(-10, -10);
+				mineField.createStandardBoard(9, 9, 10);
 			}
 			break;
 		}
@@ -196,7 +196,7 @@ public class Tutorial
 
 		g2d.setColor(Color.BLACK);
 		g2d.setFont(new Font("Default", Font.PLAIN, 10));
-		drawCenteredSplitString(g2d, drawString, GamePanel.HEIGHT - 30);
+		drawCenteredSplitString(g2d, drawString, GamePanel.HEIGHT - 45);
 
 		if(tick % 2 == 0) subStringIndex++;
 		if(subStringIndex >= text[slide][stringIndex].length())
