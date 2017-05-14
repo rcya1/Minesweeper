@@ -330,8 +330,8 @@ public class MineField //TODO Force first pick to be a blank space
 			}
 			if(cameraModeY)
 			{
-				if(cameraY + GamePanel.HEIGHT > rows * tileHeight)
-					cameraY = (rows * tileWidth) - GamePanel.HEIGHT;
+				if(cameraY + GamePanel.HEIGHT > rows * tileHeight + 42)
+					cameraY = (rows * tileWidth + 42) - GamePanel.HEIGHT;
 			}
 		}
 	}

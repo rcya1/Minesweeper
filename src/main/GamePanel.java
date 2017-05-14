@@ -109,13 +109,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	@Override
 	public void keyPressed(KeyEvent e)
 	{
-		stateManager.keyPressed(e.getKeyCode());
+		if(e != null) stateManager.keyPressed(e.getKeyCode());
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e)
 	{
-		stateManager.keyReleased(e.getKeyCode());
+		if(e != null) stateManager.keyReleased(e.getKeyCode());
 	}
 
 	@Override
@@ -133,13 +133,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	@Override
 	public void mousePressed(MouseEvent e)
 	{
-		stateManager.mousePressed(e);
+		if(e != null) stateManager.mousePressed(e);
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e)
 	{
-		stateManager.mouseReleased(e);
+		if(e != null) stateManager.mouseReleased(e);
 	}
 
 	@Override
@@ -155,10 +155,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	}
 	@Override public void mouseDragged(MouseEvent e)
 	{
-		stateManager.mouseDragged(e);
+		if(e != null) stateManager.mouseDragged(e);
 	}
 	@Override public void mouseMoved(MouseEvent e)
 	{
-		stateManager.mouseMoved(e);
+		if(e != null) stateManager.mouseMoved(e);
 	}
 }
